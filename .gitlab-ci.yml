@@ -25,8 +25,7 @@ job_build:
     - apt-get update
     - apt-get install zip
   script:  
-    - CI=false
-    - npm run build_all
-    - ./upload.sh
+    - ./travis/pack.sh
+    - ./travis/upload.sh
   only:
     - tags
