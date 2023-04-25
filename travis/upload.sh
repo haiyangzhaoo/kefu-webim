@@ -5,9 +5,9 @@ TAG_NAME=`git log --pretty='%s' -1`
 NEXUS_HOST="https://nexus.internal.live-helps.com"
 GROUP_ID="com.easemob.kefu.webim.product"
 ARTIFACT_ID="kefu-webim"
-VERSION=${TAG_NAME}
+# VERSION=${TAG_NAME}
 # or use gitlab runner env
-# VERSION=${CI_COMMIT_TAG}
+VERSION=${CI_COMMIT_TAG}
 
 # Ensure package version from git tag
 echo git tag: $VERSION
