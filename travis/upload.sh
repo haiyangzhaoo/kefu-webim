@@ -13,7 +13,7 @@ VERSION=${CI_COMMIT_TAG}
 echo git tag: $VERSION
 
 pwd
-
+ls
 # Compress package
 cd ../
 ls
