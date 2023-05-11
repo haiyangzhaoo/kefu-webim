@@ -854,7 +854,7 @@ function _handleMessage(msg, options){
 		message.subtype = type;
 		message.list = "<div class=\"em-btn-list\">"
 				+ _.map(msg.ext.msgtype.choice.items, function(item){
-					if(item.queueType == "video" || item.queueType == "independentVideo"){
+					if(item.queueType == "video"){
 						if(
 							window.location.protocol !== "https:"
 							|| !Modernizr.peerconnection
@@ -862,9 +862,6 @@ function _handleMessage(msg, options){
 						){
 							return "";
 						}
-					}
-					if (item.queueType == 'independentVideo' && !profile.grayList.vecIndependentVideo) {
-						return '';
 					}
 					if(item.id == "hasTransferNote"){
 						item.queueType = "transfer";
@@ -887,7 +884,6 @@ function _handleMessage(msg, options){
 						+ "data-id=\"" + item.id + "\" "
 						+ "data-queue-id=\"" + item.queueId + "\" "
 						+ "data-queue-type=\"" + item.queueType + "\" "
-						+ "data-config-id=\"" + (item.pluginConfig && item.pluginConfig.webConfig && item.pluginConfig.webConfig.configId ? item.pluginConfig.webConfig.configId : '') + "\""
 						+ ">" + item.name + "</button>";
 				}).join("") || ""
 				+ "</div>";
@@ -936,7 +932,7 @@ function _handleMessage(msg, options){
 					var label = item.itemName;
 					var queueType = item.queueType;
 					var className = "js_transferManualEntrybtn fg-color";
-					if(item.queueType == "video" || item.queueType == "independentVideo"){
+					if(item.queueType == "video"){
 						if(
 							window.location.protocol !== "https:"
 							|| !Modernizr.peerconnection
@@ -945,13 +941,8 @@ function _handleMessage(msg, options){
 							return "";
 						}
 					}
-					if (item.queueType == 'independentVideo' && !profile.grayList.vecIndependentVideo) {
-						return '';
-					}
 
-					return "<button class=\"" + className + "\" data-queue-name=\"" + queueName + "\" data-queue-type=\"" + queueType + "\">" + 
-					+ "data-config-id=\"" + (item.pluginConfig && item.pluginConfig.webConfig && item.pluginConfig.webConfig.configId ? item.pluginConfig.webConfig.configId : '') + "\""
-					+ label + "</button>";
+					return "<button class=\"" + className + "\" data-queue-name=\"" + queueName + "\" data-queue-type=\"" + queueType + "\">" + label + "</button>";
 				}).join("") || ""
 				+ "</div>";
 		message.data = msg.data.itemName;
