@@ -27,7 +27,10 @@ job_build:
   script:  
     - pwd
     - ls
-    - sh ./travis/pack.sh
+    - CI=false
+    - npm run build_all
+    # - zip -r build.zip build
+    # - sh ./travis/pack.sh
     - sh ./travis/upload.sh
   only:
     - tags
