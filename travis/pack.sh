@@ -1,3 +1,2 @@
 # travis
-CUR_COMMIT_MSG=`git log --pretty='%s' -1`
-TAG_NAME=$CUR_COMMIT_MSG npm run build_all
+TAG_NAME=${CI_COMMIT_TAG} npm run build_all
