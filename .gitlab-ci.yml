@@ -28,9 +28,8 @@ job_build:
     - pwd
     - ls
     - CI=false
-    - npm run build_all
-    # - zip -r build.zip build
-    # - sh ./travis/pack.sh
+    # - npm run build_all
+    - sh ./travis/pack.sh
     - sh ./travis/upload.sh
   only:
     - tags
