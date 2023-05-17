@@ -1754,18 +1754,20 @@ function _initSession(){
 				toggleButton: doms.emojiToggleButton,
 				textInput: doms.textInput,
 			});
-			if(profile.grayList.agoraVideo && config.toolbar.videoSwitch){
-				videoChatAgora.init({
-					triggerButton: doms.videoInviteButton,
-					parentContainer: doms.imChat,
-				});
-			}
-			else{
-				videoChat.init({
-					triggerButton: doms.videoInviteButton,
-					parentContainer: doms.imChat,
-				});
-			}
+      if(config.toolbar.videoSwitch) {
+        if(profile.grayList.agoraVideo){
+          videoChatAgora.init({
+            triggerButton: doms.videoInviteButton,
+            parentContainer: doms.imChat,
+          });
+        }
+        else{
+          videoChat.init({
+            triggerButton: doms.videoInviteButton,
+            parentContainer: doms.imChat,
+          });
+        }
+      }
 			extendMessageSender.init();
 
 			Promise.all([
