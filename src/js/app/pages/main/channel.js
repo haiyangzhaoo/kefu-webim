@@ -265,7 +265,6 @@ function _sendText(message, ext){
 		success: function(/* id */){ },
 		fail: function(/* id */){ }
 	});
-
 	if(ext){
 		_.extend(msg.body, ext);
 	}
@@ -1307,6 +1306,10 @@ function _setExt(msg){
 	}
 	if(!!config.routingRuleFlag){
 		msg.body.ext.weichat.routingRuleFlag = config.routingRuleFlag;
+	}
+	msg.body.ext.weichat.originType = "dingtalk"
+	if(commonConfig.getConfig().originType && commonConfig.getConfig().originType == "dingtalk"){
+		msg.body.ext.weichat.originType = "dingtalk"
 	}
 }
 

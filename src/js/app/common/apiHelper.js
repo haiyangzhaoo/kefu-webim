@@ -483,6 +483,21 @@ function putSidebarFoldedrSwitch(val){
 	});
 }
 
+function getDingdingVisitor(val){
+	var config = commonConfig.getConfig();
+	return new Promise(function(resolve, reject){
+		api("getDingdingVisitor", {
+			code: val.code,
+			configId: config.configId,
+			tenantId: val.tenantId
+		}, function(msg){
+			var result = utils.getDataByPath(msg, "data");
+			resolve(result);
+		}, function(err){
+			reject(err);
+		});
+	});
+}
 
 module.exports = {
 	getTheme: getTheme,
@@ -507,7 +522,7 @@ module.exports = {
 	getSidebarFoldedrSwitch:getSidebarFoldedrSwitch,//获取侧边栏展开折叠状态
 	putSidebarFoldedrSwitch:putSidebarFoldedrSwitch,//修改侧边栏展开折叠状态
 	getSidebarWidth:getSidebarWidth,//获取侧边栏宽度
-
+	getDingdingVisitor: getDingdingVisitor, // 获取钉钉访客信息
 	update: function(cfg){
 		config = cfg;
 	}

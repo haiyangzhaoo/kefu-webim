@@ -9,7 +9,7 @@ require("./libs/sdk/webim.config");
 require("underscore");
 require("jquery");
 window._ = require("underscore");
-
+var dd = require("./libs/sdk/ddsdk")
 var utils = require("@/common/utils");
 var chat = require("./pages/main/chat");
 var body_template = require("../../template/body.html");
@@ -75,6 +75,8 @@ screenShot();
 var selfServiceData; // 自助服务的数据
 var issueData; // 常见问题的数据
 var iframeData; // 新菜单页的数据
+
+var dingdingData;
 load_html();
 if (utils.isTop) {
 	commonConfig.h5_mode_init();
@@ -288,12 +290,115 @@ function setUserInfo(targetUserInfo) {
 			});
 		});
 	}
-
-	return createVisitor().then(function () {
-		return Promise.resolve();
-	});
+	// if(true){
+	var params = parseUrlSearch(window.location.href);
+	if(params.originType && params.originType == "dingtalk"){
+		return new Promise(function (resolve) {
+			if (dd.env.platform!=="notInDingTalk") {
+				dd.ready(function() {
+					// dd.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
+					var apiHelper = require("@/app/common/apiHelper");
+					dd.runtime.permission.requestAuthCode({
+						corpId: params.corpId,
+						// corpId: "ding0eb82ac70e6295d0",
+						onSuccess: function(result) {
+						/*{
+							code: 'hYLK98jkf0m' //string authCode
+						}*/
+							apiHelper.getDingdingVisitor({code: result.code, tenantId: commonConfig.getConfig().tenantId}).then(function(res){
+								createVisitor(res.username).then(function () {
+									resolve("")
+								});
+								var visitor = commonConfig.getConfig().visitor;
+								visitor.userNickname = data.userNickname;
+								visitor.phone = data.phone;
+								visitor.companyName = data.companyName;
+								visitor.email = data.email;
+								commonConfig.setConfig(visitor)
+							})
+						},
+						onFail : function(err) {
+							console.log('err', err)
+							createVisitor().then(function () {
+								resolve("")
+							});
+						}
+					});
+				});
+			} else {
+				createVisitor().then(function () {
+					resolve("")
+				});
+			}
+			
+			// apiHelper.getDingdingVisitor({code: '05041fe19d763d7bb6fc71f91ec270be',tenantId: commonConfig.getConfig().tenantId}).then(function(res){
+			// 	debugger;
+			// 	var visitor = commonConfig.getConfig().visitor;
+			// 	visitor.userNickname = res.userNickname;
+			// 	visitor.phone = res.phone;
+			// 	visitor.companyName = res.companyName;
+			// 	visitor.email = res.email;
+			// 	commonConfig.setConfig({
+			// 		visitor: visitor
+			// 	})
+			// 	createVisitor(res.username).then(function () {
+			// 		resolve("")
+			// 	});
+			// }, function(res){
+			// 	var data = {
+			// 		"username": "0665465230400421",
+			// 		"unionid": "rP8yTdb4wpPe8EiE",
+			// 		"userNickname": "张XX",
+			// 		"sex": null,
+			// 		"qq": null,
+			// 		"email": "xxxxxxxx@ti-net.com.cn",
+			// 		"phone": "135xxxxxxxx",
+			// 		"companyName": "私有云后端",
+			// 		"description": null,
+			// 		"tags": null,
+			// 		"userDefineColumn": null
+			// 	}
+			// 	// '0665465230400421'
+			// 	createVisitor().then(function () {
+			// 		resolve("")
+			// 	});
+			// })
+			// 	var visitor = commonConfig.getConfig().visitor;
+			// 	visitor.userNickname = data.userNickname;
+			// 	visitor.phone = data.phone;
+			// 	visitor.companyName = data.companyName;
+			// 	visitor.email = data.email;
+			// 	commonConfig.setConfig(visitor)
+			// 	debugger;
+			// 	console.log(123, commonConfig.getConfig().visitor)
+			// })
+			// apiHelper.getPassword().then(function (res) {
+			// 	commonConfig.setConfig({
+			// 		user: _.extend({}, commonConfig.getConfig().user, {
+			// 			password: res.password
+			// 		}),
+			// 		userNicknameFlg: res.nicename
+			// 	});
+			// 	resolve("widthPassword");
+			// }, function () {
+			// 	if (profile.grayList.autoCreateAppointedVisitor) {
+			// 		createVisitor(commonConfig.getConfig().user.username).then(function () {
+			// 			resolve("autoCreateAppointedVisitor");
+			// 		});
+			// 	}
+			// 	else {
+			// 		createVisitor().then(function () {
+			// 			resolve("noAutoCreateAppointedVisitor");
+			// 		});
+			// 	}
+			// });
+		});
+	} else {
+		return createVisitor().then(function () {
+			return Promise.resolve();
+		});
+	}
 }
-
 function createVisitor(username) {
 	return apiHelper.createVisitor(username).then(function (entity) {
 		commonConfig.setConfig({
@@ -310,26 +415,24 @@ function createVisitor(username) {
 
 function initConfig() {
 	apiHelper.getConfig(commonConfig.getConfig().configId)
-		.then(function (entity) {
-			entity.configJson.tenantId = entity.tenantId;
-			entity.configJson.configName = entity.configName;
-			handleConfig(entity.configJson);
-
-
-			handleSettingIframeSize();
-			initRelevanceList(entity.tenantId);
-			initInvite({ themeName: entity.configJson.ui.themeName });
-			if (!ISIFRAME) {
-				apiHelper.getQualificationStatus(entity.tenantId).then(function (res) {
-					if (res) {
-						widgetBoxHide();
-						var str = __("prompt.unavailable");
-						document.querySelector(".auth-box-PC >div span").innerHTML = str;
-						utils.removeClass(document.querySelector(".auth-box-PC"), "hide");
-					}
-				});
-			}
-		});
+	.then(function (entity) {
+		entity.configJson.tenantId = entity.tenantId;
+		entity.configJson.configName = entity.configName;
+		handleConfig(entity.configJson);
+		handleSettingIframeSize();
+		initRelevanceList(entity.tenantId);
+		initInvite({ themeName: entity.configJson.ui.themeName });
+		if (!ISIFRAME) {
+			apiHelper.getQualificationStatus(entity.tenantId).then(function (res) {
+				if (res) {
+					widgetBoxHide();
+					var str = __("prompt.unavailable");
+					document.querySelector(".auth-box-PC >div span").innerHTML = str;
+					utils.removeClass(document.querySelector(".auth-box-PC"), "hide");
+				}
+			});
+		}
+	});
 }
 
 function initInvite(opt) {
@@ -532,8 +635,6 @@ function handleCfgData(relevanceList, status) {
 		console.log("mismatched channel, use default.");
 	}
 	var params = parseUrlSearch(window.location.href);
-	console.log(params.routingRuleFlag)
-
 	var initlanguage = __("config.language") === "zh-CN" ? "zh" : "en";
 	commonConfig.setConfig({
 		logo: commonConfig.getConfig().logo || { enabled: !!targetItem.tenantLogo, url: targetItem.tenantLogo },
@@ -567,7 +668,8 @@ function handleCfgData(relevanceList, status) {
 			onlyCloseSession: "true", // 访客离开下面的开关，默认不会传该值，默认为true 这样不影响之前的逻辑
 			showEnquiryButtonInAllTime: "false", // 是否在所有时间段显示主动评价按钮,默认不会传该值，默认值为"false"，即只在坐席接待时显示主动评价按钮
 			closeSessionWhenCloseWindow: "false" // 是否在关闭聊窗的时候关闭会话，默认不会传该值，默认值为"false"
-		}
+		},
+		originType: params.originType || "",
 	});
 
 	// fake patch: 老版本配置的字符串需要decode

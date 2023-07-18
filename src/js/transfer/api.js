@@ -1150,6 +1150,17 @@ up2Im.listen(function(msg){
 			// excludeData: true,
 		});
 		break;
+	case "getDingdingVisitor":
+		url =  "__WEBIM_SLASH_KEY_PATH__/v1/webimplugin/tenants/" + tenantId + "/dingtalk/visitors";
+		delete params.tenantId;
+			emitAjax({
+				url: url,
+				type: "GET",
+				msg: msg,
+				// excludeData: true,
+			});
+			break;
+		
 	// /v1/webimplugin/tenants/{tenantId}/visitors/init-language/set
 	default:
 		console.error("unexpect api name: " + apiName);
