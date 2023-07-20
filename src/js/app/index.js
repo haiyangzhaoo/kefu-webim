@@ -71,6 +71,7 @@ var domData = {
 	close_sound: __("common.close_sound"),
 	screenShot: ""
 };
+
 screenShot();
 var selfServiceData; // 自助服务的数据
 var issueData; // 常见问题的数据
@@ -292,7 +293,7 @@ function setUserInfo(targetUserInfo) {
 	}
 	// if(true){
 	var params = parseUrlSearch(window.location.href);
-	if(params.originType && params.originType == "dingtalk"){
+	if(params.originType && (params.originType == 'dingtalk')){
 		return new Promise(function (resolve) {
 			if (dd.env.platform!=="notInDingTalk") {
 				dd.ready(function() {
@@ -306,19 +307,19 @@ function setUserInfo(targetUserInfo) {
 							code: 'hYLK98jkf0m' //string authCode
 						}*/
 							apiHelper.getDingdingVisitor({code: result.code, tenantId: commonConfig.getConfig().tenantId}).then(function(res){
-								createVisitor(res.username).then(function () {
-									resolve("")
-								});
 								var visitor = commonConfig.getConfig().visitor;
 								visitor.userNickname = data.userNickname;
 								visitor.phone = data.phone;
 								visitor.companyName = data.companyName;
 								visitor.email = data.email;
-								commonConfig.setConfig(visitor)
+								commonConfig.setConfig({visitor: visitor})
+								createVisitor(res.username).then(function () {
+									resolve("")
+								});
+								
 							})
 						},
 						onFail : function(err) {
-							console.log('err', err)
 							createVisitor().then(function () {
 								resolve("")
 							});
@@ -330,68 +331,6 @@ function setUserInfo(targetUserInfo) {
 					resolve("")
 				});
 			}
-			
-			// apiHelper.getDingdingVisitor({code: '05041fe19d763d7bb6fc71f91ec270be',tenantId: commonConfig.getConfig().tenantId}).then(function(res){
-			// 	debugger;
-			// 	var visitor = commonConfig.getConfig().visitor;
-			// 	visitor.userNickname = res.userNickname;
-			// 	visitor.phone = res.phone;
-			// 	visitor.companyName = res.companyName;
-			// 	visitor.email = res.email;
-			// 	commonConfig.setConfig({
-			// 		visitor: visitor
-			// 	})
-			// 	createVisitor(res.username).then(function () {
-			// 		resolve("")
-			// 	});
-			// }, function(res){
-			// 	var data = {
-			// 		"username": "0665465230400421",
-			// 		"unionid": "rP8yTdb4wpPe8EiE",
-			// 		"userNickname": "张XX",
-			// 		"sex": null,
-			// 		"qq": null,
-			// 		"email": "xxxxxxxx@ti-net.com.cn",
-			// 		"phone": "135xxxxxxxx",
-			// 		"companyName": "私有云后端",
-			// 		"description": null,
-			// 		"tags": null,
-			// 		"userDefineColumn": null
-			// 	}
-			// 	// '0665465230400421'
-			// 	createVisitor().then(function () {
-			// 		resolve("")
-			// 	});
-			// })
-			// 	var visitor = commonConfig.getConfig().visitor;
-			// 	visitor.userNickname = data.userNickname;
-			// 	visitor.phone = data.phone;
-			// 	visitor.companyName = data.companyName;
-			// 	visitor.email = data.email;
-			// 	commonConfig.setConfig(visitor)
-			// 	debugger;
-			// 	console.log(123, commonConfig.getConfig().visitor)
-			// })
-			// apiHelper.getPassword().then(function (res) {
-			// 	commonConfig.setConfig({
-			// 		user: _.extend({}, commonConfig.getConfig().user, {
-			// 			password: res.password
-			// 		}),
-			// 		userNicknameFlg: res.nicename
-			// 	});
-			// 	resolve("widthPassword");
-			// }, function () {
-			// 	if (profile.grayList.autoCreateAppointedVisitor) {
-			// 		createVisitor(commonConfig.getConfig().user.username).then(function () {
-			// 			resolve("autoCreateAppointedVisitor");
-			// 		});
-			// 	}
-			// 	else {
-			// 		createVisitor().then(function () {
-			// 			resolve("noAutoCreateAppointedVisitor");
-			// 		});
-			// 	}
-			// });
 		});
 	} else {
 		return createVisitor().then(function () {
