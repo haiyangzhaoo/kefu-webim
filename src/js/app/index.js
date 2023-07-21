@@ -308,15 +308,14 @@ function setUserInfo(targetUserInfo) {
 						}*/
 							apiHelper.getDingdingVisitor({code: result.code, tenantId: commonConfig.getConfig().tenantId}).then(function(res){
 								var visitor = commonConfig.getConfig().visitor;
-								visitor.userNickname = data.userNickname;
-								visitor.phone = data.phone;
-								visitor.companyName = data.companyName;
-								visitor.email = data.email;
-								commonConfig.setConfig({visitor: visitor})
+								visitor.userNickname = res.userNickname;
+								visitor.phone = res.phone;
+								visitor.companyName = res.companyName;
+								visitor.email = res.email;
 								createVisitor(res.username).then(function () {
 									resolve("")
 								});
-								
+								commonConfig.setConfig({visitor: visitor})
 							})
 						},
 						onFail : function(err) {
