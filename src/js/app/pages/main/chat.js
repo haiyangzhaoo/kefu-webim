@@ -1754,19 +1754,21 @@ function _initSession(){
 				toggleButton: doms.emojiToggleButton,
 				textInput: doms.textInput,
 			});
-      if(config.toolbar.videoSwitch) {
-        if(profile.grayList.agoraVideo){
-          videoChatAgora.init({
-            triggerButton: doms.videoInviteButton,
-            parentContainer: doms.imChat,
-          });
-        }
-        else{
-          videoChat.init({
-            triggerButton: doms.videoInviteButton,
-            parentContainer: doms.imChat,
-          });
-        }
+
+      const videoSwitch = config.toolbar.videoSwitch
+      if(profile.grayList.agoraVideo){
+        videoChatAgora.init({
+          videoSwitch,
+          triggerButton: doms.videoInviteButton,
+          parentContainer: doms.imChat,
+        });
+      }
+      else{
+        videoChat.init({
+          videoSwitch,
+          triggerButton: doms.videoInviteButton,
+          parentContainer: doms.imChat,
+        });
       }
 			extendMessageSender.init();
 

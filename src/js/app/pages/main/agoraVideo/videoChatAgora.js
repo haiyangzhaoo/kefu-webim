@@ -395,6 +395,7 @@ function init(option){
 	opt = option || {};
 	triggerButton = opt.triggerButton;
 	parentContainer = opt.parentContainer;
+  var videoSwitch = opt.videoSwitch;
 
 	adapterPath = STATIC_PATH + "/js/lib/adapter.min.js?v=unknown-000";
 	eMediaSdkPath = STATIC_PATH + "/js/lib/EMedia_sdk.min.js?v=1.1.2";
@@ -409,6 +410,8 @@ function init(option){
 		eventListener.add(_const.SYSTEM_EVENT.VIDEO_TICKET_RECEIVED, _reveiveTicket);
 		eventListener.add(_const.SYSTEM_EVENT.VIDEO_ARGO_END, _closeVideo);
 		eventListener.add(_const.SYSTEM_EVENT.WHITE_BOARD_RECEIVED, _receiveWhiteBoard);
+    // 当关闭视频按钮开关时，不触发视频邀请按钮逻辑
+    if(!videoSwitch) return
 		// 显示视频邀请按钮，并绑定事件
 		utils.removeClass(triggerButton, "hide");
 		utils.on(triggerButton, "click", function(){
