@@ -2,6 +2,8 @@ node_modules
 package-lock.json
 *.map
 
+.vscode
+
 en-US/static
 en-US/easemob.js
 en-US/im_cached.html
