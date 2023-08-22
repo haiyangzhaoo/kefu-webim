@@ -36,7 +36,7 @@ var _init = _.once(function(){
 		event.preventDefault();
 	});
 	("download" in document.createElement("a")) && utils.on(androidLoadTip, "click", function(){
-		window.location = imgSrc; 
+		window.location = imgSrc;
 		return false;
 	});
 	function preventDefaultFn(event){
@@ -68,8 +68,12 @@ module.exports = {
 		if(url.indexOf("blob:") == 0){
 			url = url
 		}
-		else{
-			url = url + '?origin-file=true';
+		else {
+      if (url.indexOf("?") > -1) {
+        url = url + "&origin-file=true";
+      } else {
+        url = url + '?origin-file=true';
+      }
 		}
 		imgSrc = url;
 		_init();
