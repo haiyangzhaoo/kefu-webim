@@ -37,9 +37,8 @@ i18next.use(i18nextHttpBackend).init({
 		}
 	},
 }, function(err, t) {
-	// console.log(`%cHTML Lang Init`, `color: purple; font-weight: bold;`, lang, initLang, err);
 	console.log('1111111html', initLang, lang, err)
-	// window.i18n = i18next;
+	window.i18nWebim = i18next;
 	if (lang == 'zh-HK') {
 		window.__ = function() {
 			return converter(t.apply(null, arguments));
@@ -156,7 +155,7 @@ else {
 				if (data.language !== lang) {
 					window.localStorage.setItem('i18n', data.language);
 					window.localStorage.setItem('configId', window.btoa(data.configId));
-					i18n.changeLanguage(initLang);
+					i18nWebim.changeLanguage(initLang);
 					window.location.reload();
 				}
 				initCrossOriginIframe();
