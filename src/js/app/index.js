@@ -2,6 +2,52 @@
 // 2. 管理初始化
 // 3. 管理通信
 // 4. 管理切换
+const OpenCC = require('opencc-js');
+const i18next = require("i18next");
+const i18nextHttpBackend = require("i18next-http-backend");
+
+const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
+let search = window.location ? window.location.search : '';
+let searchParams = {}
+// 改变语言刷新本地，因此保存在本地
+let localI18n = window.localStorage.getItem('i18n');
+let localConfigId = window.atob(window.localStorage.getItem('configId'));
+search.substr(1).split('&').forEach(function(v) {
+	let [key, val] = v.split('=');
+	searchParams[key] = val;
+});
+// 链接上语言优先级最高
+let lang = searchParams.language || localI18n || 'en';
+let initLang = lang.split('-')[0];
+
+i18next.use(i18nextHttpBackend).init({
+	lng: initLang,
+	fallbackLng: false,
+	keySeparator: ".",
+	nsSeparator: false,
+	saveMissing: true,
+	// ns: ['translation'],
+	// defaultNS: 'translation',
+	// languages: ['zhCN', 'enUS'],
+	backend: {
+		loadPath: `/v1/webimplugin/settings/config/${searchParams.configId || localConfigId}/language/content?language=${initLang}`,
+		addPath: null,
+		parse: ret => {
+			return JSON.parse(ret).entity
+		}
+	},
+}, function(err, t) {
+	// console.log(`%cHTML Lang Init`, `color: purple; font-weight: bold;`, lang, initLang, err);
+	console.log('1111111html', initLang, lang, err)
+	window.i18n = i18next;
+	if (lang == 'zh-HK') {
+		window.__ = function() {
+			return converter(t.apply(null, arguments));
+		}
+	} else {
+		window.__ = t;
+	}
+
 require("es6-promise").polyfill();
 require("@/common/polyfill");
 require("./libs/modernizr");
@@ -79,6 +125,11 @@ var iframeData; // 新菜单页的数据
 
 var dingdingData;
 load_html();
+getToHost.send({
+	event: "i18n_init_ok",
+	data: true
+});
+
 if (utils.isTop) {
 	commonConfig.h5_mode_init();
 	initCrossOriginIframe();
@@ -101,6 +152,13 @@ else {
 			case _const.EVENTS.INIT_CONFIG:
 				getToHost.to = data.parentId;
 				commonConfig.setConfig(data);
+				console.log(1111111, data.language, lang, initLang)
+				if (data.language !== lang) {
+					window.localStorage.setItem('i18n', data.language);
+					window.localStorage.setItem('configId', window.btoa(data.configId));
+					i18n.changeLanguage(initLang);
+					window.location.reload();
+				}
 				initCrossOriginIframe();
 				ISIFRAME = true;
 				break;
@@ -999,3 +1057,6 @@ function load_html() {
 
 	chat.getDom();
 }
+
+	
+});

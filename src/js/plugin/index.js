@@ -1,3 +1,75 @@
+const OpenCC = require('opencc-js');
+const i18next = require("i18next");
+const i18nextHttpBackend = require("i18next-http-backend");
+
+const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
+
+window.easemobim = window.easemobim || {};
+window.easemobim.config = window.easemobim.config || {};
+
+// get config from current script
+function getScriptConfig(){
+	var src;
+	var obj = {};
+	var scripts = document.scripts;
+	var s, l, i, len;
+
+	for(s = 0, l = scripts.length; s < l; s++){
+		if(~scripts[s].src.indexOf("easemob.js")){
+			// src 会被强制加上域名
+			src = scripts[s].src;
+			break;
+		}
+	}
+
+	if(!src){
+		return { json: obj, domain: "" };
+	}
+
+	var tmp;
+	var idx = src.indexOf("?");
+	var sIdx = ~src.indexOf("//") ? src.indexOf("//") : 0;
+	var domain = src.slice(0, src.indexOf("/", sIdx + 2));
+	var arr = src.slice(idx + 1).split("&");
+
+	for(i = 0, len = arr.length; i < len; i++){
+		tmp = arr[i].split("=");
+		obj[tmp[0]] = tmp.length > 1 ? decodeURIComponent(tmp[1]) : "";
+	}
+	return { json: obj, domain: domain };
+}
+// get parameters from easemob.js
+var baseConfig = getScriptConfig();
+
+let lang = window.easemobim.config.language || baseConfig.json.language || 'en';
+let initLang = lang.split('-')[0];
+i18next.use(i18nextHttpBackend).init({
+	lng: initLang,
+	fallbackLng: false,
+	keySeparator: ".",
+	nsSeparator: false,
+	saveMissing: true,
+	// ns: ['translation'],
+	// defaultNS: 'translation',
+	// languages: ['zhCN', 'enUS'],
+	backend: {
+		loadPath: `/v1/webimplugin/settings/config/${window.easemobim.config.configId || baseConfig.json.configId}/language/content?language=${initLang}`,
+		addPath: null,
+		parse: ret => {
+			return JSON.parse(ret).entity
+		}
+	},
+}, function(err, t) {
+	console.log('11111111iframe', initLang, err)
+	window.i18n = i18next;
+	if (lang == 'zh-HK') {
+		window.__ = function() {
+			return converter(t.apply(null, arguments));
+		}
+	} else {
+		window.__ = t;
+	}
+
 require("underscore");
 var utils = require("../common/utils");
 var loading = require("./loading");
@@ -5,8 +77,8 @@ var Iframe = require("./iframe");
 var tenantList = {};
 var DEFAULT_CONFIG;
 
-// get parameters from easemob.js
-var baseConfig = getScriptConfig();
+// // get parameters from easemob.js
+// var baseConfig = getScriptConfig();
 var _config = {};
 var iframe;
 var bind;
@@ -52,7 +124,8 @@ DEFAULT_CONFIG = {
 		token: ""
 	},
 	fromUrl: window.location.href,
-	referer: document.referrer
+	referer: document.referrer,
+	language: '',
 };
 // 店匠：两层iframe 着陆页获取特殊处理！！
 if(DEFAULT_CONFIG.fromUrl == "about:blank"){
@@ -83,7 +156,8 @@ function reset(config){
 		domain: configData.domain || baseConfig.domain,
 		path: configData.path || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__/webim"),
 		staticPath: configData.staticPath || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__/webim/static"),
-		guestId: utils.getStore("guestId") // 这个是别人种的cookie
+		guestId: utils.getStore("guestId"), // 这个是别人种的cookie
+		language: configData.language || baseConfig.json.language || 'en',
 	});
 	// demo 页面点击联系客服带着 tenantId, 就删除 config 中的 configId, 否则 configId 存在就会用 configId 去渲染页面
 	if(config.tenantId){
@@ -94,38 +168,6 @@ function reset(config){
 
 function setConfig(configExt){
 	_config = _.extend({}, _config, configExt);
-}
-
-// get config from current script
-function getScriptConfig(){
-	var src;
-	var obj = {};
-	var scripts = document.scripts;
-	var s, l, i, len;
-
-	for(s = 0, l = scripts.length; s < l; s++){
-		if(~scripts[s].src.indexOf("easemob.js")){
-			// src 会被强制加上域名
-			src = scripts[s].src;
-			break;
-		}
-	}
-
-	if(!src){
-		return { json: obj, domain: "" };
-	}
-
-	var tmp;
-	var idx = src.indexOf("?");
-	var sIdx = ~src.indexOf("//") ? src.indexOf("//") : 0;
-	var domain = src.slice(0, src.indexOf("/", sIdx + 2));
-	var arr = src.slice(idx + 1).split("&");
-
-	for(i = 0, len = arr.length; i < len; i++){
-		tmp = arr[i].split("=");
-		obj[tmp[0]] = tmp.length > 1 ? decodeURIComponent(tmp[1]) : "";
-	}
-	return { json: obj, domain: domain };
 }
 
 /*
@@ -297,3 +339,5 @@ else if(typeof define === "function" && define.amd){
 		return easemobim;
 	});
 }
+
+})
