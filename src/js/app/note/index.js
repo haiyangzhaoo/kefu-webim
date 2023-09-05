@@ -49,7 +49,7 @@ i18next.use(i18nextHttpBackend).init({
 	},
 }, function(err, t) {
 	console.log('1111111note', initLang, err)
-	window.i18n = i18next;
+	// window.i18n = i18next;
 	if (lang == 'zh-HK') {
 		window.__ = function() {
 			return converter(t.apply(null, arguments));
