@@ -599,7 +599,7 @@ function parseUrlSearch(url) {
 
 // todo: rename this function
 function handleCfgData(relevanceList, status) {
-	var defaultStaticPath = __("config.language") === "zh-CN" ? "static" : "../static";
+	var defaultStaticPath = __("config.language") === "en-US" ? "../static" : "static";
 	// default value
 
 	var targetItem;
@@ -633,7 +633,7 @@ function handleCfgData(relevanceList, status) {
 		console.log("mismatched channel, use default.");
 	}
 	var params = parseUrlSearch(window.location.href);
-	var initlanguage = __("config.language") === "zh-CN" ? "zh" : "en";
+	var initlanguage = {'zh-CN': 'zh', 'en-US': 'en'}[__("config.language")] || __("config.language");
 	commonConfig.setConfig({
 		logo: commonConfig.getConfig().logo || { enabled: !!targetItem.tenantLogo, url: targetItem.tenantLogo },
 		toUser: targetItem.imServiceNumber,

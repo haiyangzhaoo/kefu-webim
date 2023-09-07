@@ -331,5 +331,5 @@ function _createVisitor(){
 	chat.init();
 }
 function _initLanguage(user){
-	apiHelper.initLanguage(commonConfig.getConfig().initLanguage,user.username);
+	apiHelper.initLanguage(commonConfig.getConfig().initLanguage, user.username);
 }
