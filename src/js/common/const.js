@@ -237,7 +237,7 @@ module.exports = {
 		11: "The conference is closed.",
 	},
 
-	EMOJI_PATH: __("config.language") === "zh-CN" ? "static/img/faces/" : "../static/img/faces/",
+	EMOJI_PATH: __("config.language") === "en-US" ? "../static/img/faces/" : "static/img/faces/",
 
 	EMOJI_MAP: {
 		"[):]": "ee_1.png",
@@ -277,6 +277,6 @@ module.exports = {
 		"[(D)]": "ee_35.png",
 	},
 
-	SELFSERVICE_PATH: __("config.language") === "zh-CN" ? "static/img/selfServiceIcon/" : "../static/img/selfServiceIcon/",
+	SELFSERVICE_PATH: __("config.language") === "en-US" ? "../static/img/selfServiceIcon/" : "static/img/selfServiceIcon/",
 
 };

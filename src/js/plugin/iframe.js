@@ -8,7 +8,7 @@ var pcImgView = require("./pcImgview");
 var InviteBox = require("./inviteView");
 var eventListener = require("@/app/tools/eventListener");
 
-var IM_HTML_PATH = __("config.language") === "zh-CN" ? "/im_cached.html" : "/en-US/im_cached.html";
+var IM_HTML_PATH = __("config.language") === "en-US" ? "/en-US/im_cached.html" : "/im_cached.html";
 var me = this;
 var _st = 0;
 var _startPosition = {
