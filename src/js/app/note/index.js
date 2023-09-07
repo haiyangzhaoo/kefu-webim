@@ -30,6 +30,9 @@ var config = getNoteConfig().config || {};
 // let localI18n = window.localStorage.getItem('i18n');
 let lang = config.language || 'en';
 let initLang = lang.split('-')[0];
+if (lang == 'zh-tw') {
+	initLang = lang;
+}
 
 i18next.use(i18nextHttpBackend).init({
 	lng: initLang,

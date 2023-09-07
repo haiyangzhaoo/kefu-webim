@@ -43,6 +43,10 @@ var baseConfig = getScriptConfig();
 
 let lang = window.easemobim.config.language || baseConfig.json.language || 'en';
 let initLang = lang.split('-')[0];
+if (lang == 'zh-tw') {
+	initLang = lang;
+}
+
 i18next.use(i18nextHttpBackend).init({
 	lng: initLang,
 	fallbackLng: false,
