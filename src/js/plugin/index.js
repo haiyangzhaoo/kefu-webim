@@ -43,7 +43,7 @@ var baseConfig = getScriptConfig();
 
 let lang = window.easemobim.config.language || baseConfig.json.language || 'en';
 let initLang = lang.split('-')[0];
-if (lang == 'zh-tw') {
+if (lang == 'zh-HK') {
 	initLang = lang;
 }
 

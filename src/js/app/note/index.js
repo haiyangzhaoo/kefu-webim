@@ -30,7 +30,7 @@ var config = getNoteConfig().config || {};
 // let localI18n = window.localStorage.getItem('i18n');
 let lang = config.language || 'en';
 let initLang = lang.split('-')[0];
-if (lang == 'zh-tw') {
+if (lang == 'zh-HK') {
 	initLang = lang;
 }
 
