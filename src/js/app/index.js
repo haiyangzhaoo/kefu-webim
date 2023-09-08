@@ -19,7 +19,7 @@ search.substr(1).split('&').forEach(function(v) {
 // 链接上语言优先级最高
 let lang = searchParams.language || localI18n || 'en';
 let initLang = lang.split('-')[0];
-if (lang == 'zh-tw') {
+if (lang == 'zh-HK') {
 	initLang = lang;
 }
 
