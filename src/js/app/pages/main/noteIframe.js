@@ -3,7 +3,8 @@ var _const = require("@/common/const");
 var profile = require("@/app/tools/profile");
 var commonConfig = require("@/common/config");
 
-var NOTE_HTML_PATH = __("config.language") === "en-US" ? "/en-US/note.html" : "/note.html";
+// var NOTE_HTML_PATH = __("config.language") === "en-US" ? "/en-US/note.html" : "/note.html";
+var NOTE_HTML_PATH = location.pathname.indexOf('en-US') !== -1 ? "/en-US/note.html" : "/note.html";
 
 function Iframe(config){
 	// 自定义主题色

@@ -599,7 +599,8 @@ function parseUrlSearch(url) {
 
 // todo: rename this function
 function handleCfgData(relevanceList, status) {
-	var defaultStaticPath = __("config.language") === "en-US" ? "../static" : "static";
+	// var defaultStaticPath = __("config.language") === "en-US" ? "../static" : "static";
+	var defaultStaticPath = location.pathname.indexOf('en-US') !== -1 ? "../static" : "static";
 	// default value
 
 	var targetItem;
