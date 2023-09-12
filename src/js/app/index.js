@@ -636,7 +636,7 @@ function handleCfgData(relevanceList, status) {
 	}
 	var params = parseUrlSearch(window.location.href);
 	var initlanguage = {'zh-CN': 'zh', 'en-US': 'en'}[__("config.language")] || initLang || __("config.language");
-	if (initLang == 'zh-HK') initlanguage = 'zh-HK'
+	if (initLang == 'zh-HK') initlanguage = 'zh-tw'
 
 	commonConfig.setConfig({
 		logo: commonConfig.getConfig().logo || { enabled: !!targetItem.tenantLogo, url: targetItem.tenantLogo },
