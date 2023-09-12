@@ -9,6 +9,7 @@ const i18nextHttpBackend = require("i18next-http-backend");
 const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
 let search = window.location ? window.location.search : '';
 let searchParams = {}
+// JS集成的时候，也是页面加载完成后执行监听事件获取config配置才开始渲染页面，因此首先将获取的语言保存在本地，刷新页面重新请求，以本地保存的作为第二条件请求语言包。
 // 改变语言刷新本地，因此保存在本地
 let localI18n = window.localStorage.getItem('i18n');
 let localConfigId = window.atob(window.localStorage.getItem('configId'));
@@ -634,7 +635,9 @@ function handleCfgData(relevanceList, status) {
 		console.log("mismatched channel, use default.");
 	}
 	var params = parseUrlSearch(window.location.href);
-	var initlanguage = {'zh-CN': 'zh', 'en-US': 'en'}[__("config.language")] || __("config.language");
+	var initlanguage = {'zh-CN': 'zh', 'en-US': 'en'}[__("config.language")] || initLang || __("config.language");
+	if (initLang == 'zh-HK') initlanguage = 'zh-HK'
+
 	commonConfig.setConfig({
 		logo: commonConfig.getConfig().logo || { enabled: !!targetItem.tenantLogo, url: targetItem.tenantLogo },
 		toUser: targetItem.imServiceNumber,

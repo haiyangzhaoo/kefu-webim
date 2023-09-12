@@ -1169,7 +1169,6 @@ up2Im.listen(function(msg){
       })
       break;
 		
-	// /v1/webimplugin/tenants/{tenantId}/visitors/init-language/set
 	default:
 		console.error("unexpect api name: " + apiName);
 		break;
