@@ -60,7 +60,11 @@ i18next.use(i18nextHttpBackend).init({
 		loadPath: `/v1/webimplugin/settings/config/${window.easemobim.config.configId || baseConfig.json.configId}/language/content?language=${initLang}`,
 		addPath: null,
 		parse: ret => {
-			return JSON.parse(ret).entity
+			ret = JSON.parse(ret);
+			let data = ret.status == 'OK' ? ret.entity : {};
+			initLang && Object.keys(data).length && (data.config.language = lang);
+
+			return data;
 		}
 	},
 }, function(err, t) {
