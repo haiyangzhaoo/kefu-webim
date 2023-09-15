@@ -1160,6 +1160,16 @@ up2Im.listen(function(msg){
 				// excludeData: true,
 			});
 			break;
+
+    case "getYspVisitorInfo":
+      emitAjax({
+        url: "__WEBIM_SLASH_KEY_PATH__/v1/webimplugin/visitors/ext/decrypt",
+        type: "POST",
+        msg: msg
+      })
+      break;
+		
+	// /v1/webimplugin/tenants/{tenantId}/visitors/init-language/set
 	default:
 		console.error("unexpect api name: " + apiName);
 		break;

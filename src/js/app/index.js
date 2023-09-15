@@ -1018,8 +1018,25 @@ function initCrossOriginIframe() {
 	iframe.src = commonConfig.getConfig().domain + "__WEBIM_SLASH_KEY_PATH__/webim/transfer.html?v=__WEBIM_PLUGIN_VERSION__";
 	utils.on(iframe, "load", function () {
 		apiHelper.initApiTransfer();
-		// 有 configId 需要先去获取 config 信息
-		commonConfig.getConfig().configId ? initConfig() : initRelevanceList();
+    var config = commonConfig.getConfig()
+    if(config.customer === "ysp") {
+      apiHelper.getYspVisitorInfo(config.key, config.visitor.visitorExt)
+      .then(function (data) {
+        var yspInfo = data.entity
+        var visitor = config.visitor
+        visitor.trueName = yspInfo.userName
+        visitor.phone = yspInfo.bindPhoneNumber
+        visitor.userNickname = yspInfo.loginName
+        visitor.userDefineColumn = JSON.stringify(yspInfo)
+        commonConfig.setConfig({ visitor: visitor })
+
+        // 有 configId 需要先去获取 config 信息
+		    commonConfig.getConfig().configId ? initConfig() : initRelevanceList();
+      })
+    } else {
+      // 有 configId 需要先去获取 config 信息
+      commonConfig.getConfig().configId ? initConfig() : initRelevanceList();
+    }
 	});
 }
 function screenShot() {
