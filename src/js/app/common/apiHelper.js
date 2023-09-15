@@ -499,6 +499,21 @@ function getDingdingVisitor(val){
 	});
 }
 
+function getYspVisitorInfo(secret, visitorExt){
+	return new Promise(function(resolve, reject){
+		api("getYspVisitorInfo", {
+      customer: "ysp",
+			secret: secret,
+			visitorExt: visitorExt
+		}, function(msg){
+			var result = utils.getDataByPath(msg, "data");
+			resolve(result);
+		}, function(err){
+			reject(err);
+		});
+	});
+}
+
 module.exports = {
 	getTheme: getTheme,
 	getPassword: getPassword,
@@ -523,6 +538,7 @@ module.exports = {
 	putSidebarFoldedrSwitch:putSidebarFoldedrSwitch,//修改侧边栏展开折叠状态
 	getSidebarWidth:getSidebarWidth,//获取侧边栏宽度
 	getDingdingVisitor: getDingdingVisitor, // 获取钉钉访客信息
+  getYspVisitorInfo: getYspVisitorInfo, // 获取央视频访客信息
 	update: function(cfg){
 		config = cfg;
 	}
