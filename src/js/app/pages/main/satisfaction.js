@@ -372,7 +372,7 @@ function _confirm(){
 	});
 	var resolutionParam = [{
 		id: resolvedId,
-		name: resolvedId == 1 ? "已解决" : "未解决",
+		name: resolvedId == 1 ? __("evaluation.resolved") : __("evaluation.unsolved") ,
 		score: resolvedId,
 		resolutionParamTags: []
 	}];
