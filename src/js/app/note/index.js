@@ -28,7 +28,7 @@ var config = getNoteConfig().config || {};
 
 // 改变语言刷新本地，因此保存在本地
 // let localI18n = window.localStorage.getItem('i18n');
-let lang = config.language || 'en';
+let lang = config.language || 'zh';
 let initLang = lang.split('-')[0];
 if (lang == 'zh-HK') {
 	initLang = lang;
