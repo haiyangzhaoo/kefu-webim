@@ -41,7 +41,7 @@ function getScriptConfig(){
 // get parameters from easemob.js
 var baseConfig = getScriptConfig();
 
-let lang = window.easemobim.config.language || baseConfig.json.language || 'en';
+let lang = window.easemobim.config.language || baseConfig.json.language || 'zh';
 let initLang = lang.split('-')[0];
 if (lang == 'zh-HK') {
 	initLang = lang;
@@ -165,7 +165,7 @@ function reset(config){
 		path: configData.path || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__/webim"),
 		staticPath: configData.staticPath || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__/webim/static"),
 		guestId: utils.getStore("guestId"), // 这个是别人种的cookie
-		language: configData.language || baseConfig.json.language || 'en',
+		language: configData.language || baseConfig.json.language || 'zh',
 	});
 	// demo 页面点击联系客服带着 tenantId, 就删除 config 中的 configId, 否则 configId 存在就会用 configId 去渲染页面
 	if(config.tenantId){
