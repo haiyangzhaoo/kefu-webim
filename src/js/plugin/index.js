@@ -1,8 +1,8 @@
-const OpenCC = require('opencc-js');
+// const OpenCC = require('opencc-js');
 const i18next = require("i18next");
 const i18nextHttpBackend = require("i18next-http-backend");
 
-const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
+// const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
 
 window.easemobim = window.easemobim || {};
 window.easemobim.config = window.easemobim.config || {};
@@ -70,13 +70,13 @@ i18next.use(i18nextHttpBackend).init({
 }, function(err, t) {
 	console.log('11111111iframe', initLang, err)
 	window.i18nWebim = i18next;
-	if (lang == 'zh-HK') {
-		window.__ = function() {
-			return converter(t.apply(null, arguments));
-		}
-	} else {
+	// if (lang == 'zh-HK') {
+	// 	window.__ = function() {
+	// 		return converter(t.apply(null, arguments));
+	// 	}
+	// } else {
 		window.__ = t;
-	}
+	// }
 
 require("underscore");
 var utils = require("../common/utils");
