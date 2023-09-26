@@ -2,6 +2,9 @@
 // 2. 管理初始化
 // 3. 管理通信
 // 4. 管理切换
+
+var getToHost = require("@/app/common/transfer");
+var utils = require("@/common/utils");
 const OpenCC = require('opencc-js');
 const i18next = require("i18next");
 const i18nextHttpBackend = require("i18next-http-backend");
@@ -18,33 +21,82 @@ search.substr(1).split('&').forEach(function(v) {
 	searchParams[key] = val;
 });
 // 链接上语言优先级最高
-let lang = searchParams.language || localI18n || 'zh';
-let initLang = lang.split('-')[0];
-if (lang == 'zh-HK') {
-	initLang = lang;
+// let lang = searchParams.language || localI18n || 'zh';
+// let initLang = lang.split('-')[0];
+// if (lang == 'zh-HK') {
+// 	initLang = lang;
+// }
+
+var i18nHttp = i18next.use(i18nextHttpBackend);
+var initLang;
+var lang;
+
+// 根据是iframe还是网页，获取后再去执行加载语言包
+if (!utils.isTop) { // js
+	getToHost.listen(function (msg) {
+		if (msg && msg.event == "init_lang") {
+			lang = msg.data.language || 'zh';
+			let configId = msg.data.configId;
+
+			initLang = lang.split('-')[0];
+			if (lang == 'zh-HK') {
+				initLang = lang;
+			}
+
+			i18nHttp.init({
+				lng: initLang,
+				fallbackLng: false,
+				keySeparator: ".",
+				nsSeparator: false,
+				saveMissing: true,
+				// ns: ['translation'],
+				// defaultNS: 'translation',
+				// languages: ['zhCN', 'enUS'],
+				backend: {
+					loadPath: `/v1/webimplugin/settings/config/${configId}/language/content?language=${initLang}`,
+					addPath: null,
+					parse: ret => {
+						 ret = JSON.parse(ret);
+						let data = ret.status == 'OK' ? ret.entity : {};
+						initLang && Object.keys(data).length && (data.config.language = lang);
+			
+						return data;
+					}
+				},
+			}, callback);
+		}
+	})
+} else {
+	lang = searchParams.language || 'zh';
+	initLang = lang.split('-')[0];
+	if (lang == 'zh-HK') {
+		initLang = lang;
+	}
+
+	i18nHttp.init({
+		lng: initLang,
+		fallbackLng: false,
+		keySeparator: ".",
+		nsSeparator: false,
+		saveMissing: true,
+		// ns: ['translation'],
+		// defaultNS: 'translation',
+		// languages: ['zhCN', 'enUS'],
+		backend: {
+			loadPath: `/v1/webimplugin/settings/config/${searchParams.configId}/language/content?language=${initLang}`,
+			addPath: null,
+			parse: ret => {
+				 ret = JSON.parse(ret);
+				let data = ret.status == 'OK' ? ret.entity : {};
+				initLang && Object.keys(data).length && (data.config.language = lang);
+	
+				return data;
+			}
+		},
+	}, callback);
 }
 
-i18next.use(i18nextHttpBackend).init({
-	lng: initLang,
-	fallbackLng: false,
-	keySeparator: ".",
-	nsSeparator: false,
-	saveMissing: true,
-	// ns: ['translation'],
-	// defaultNS: 'translation',
-	// languages: ['zhCN', 'enUS'],
-	backend: {
-		loadPath: `/v1/webimplugin/settings/config/${searchParams.configId || localConfigId}/language/content?language=${initLang}`,
-		addPath: null,
-		parse: ret => {
-		 	ret = JSON.parse(ret);
-			let data = ret.status == 'OK' ? ret.entity : {};
-			initLang && Object.keys(data).length && (data.config.language = lang);
-
-			return data;
-		}
-	},
-}, function(err, t) {
+function callback(err, t) {
 	console.log('1111111html', initLang, lang, err)
 	window.i18nWebim = i18next;
 	if (lang == 'zh-HK') {
@@ -63,7 +115,7 @@ require("underscore");
 require("jquery");
 window._ = require("underscore");
 var dd = require("./libs/sdk/ddsdk")
-var utils = require("@/common/utils");
+// var utils = require("@/common/utils");
 var chat = require("./pages/main/chat");
 var body_template = require("../../template/body.html");
 var main = require("./pages/main/init");
@@ -74,7 +126,7 @@ var _const = require("@/common/const");
 var profile = require("@/app/tools/profile");
 var handleConfig = commonConfig.handleConfig;
 var doWechatAuth = require("@/app/common/wechat");
-var getToHost = require("@/app/common/transfer");
+// var getToHost = require("@/app/common/transfer");
 var eventListener = require("@/app/tools/eventListener");
 var fromUserClick = false;
 var Tab = require("@/common/uikit/tab");
@@ -159,13 +211,13 @@ else {
 			case _const.EVENTS.INIT_CONFIG:
 				getToHost.to = data.parentId;
 				commonConfig.setConfig(data);
-				console.log(1111111, data.language, lang, initLang)
-				if (data.language !== lang) {
-					window.localStorage.setItem('i18n', data.language);
-					window.localStorage.setItem('configId', window.btoa(data.configId));
-					i18nWebim.changeLanguage(initLang);
-					window.location.reload();
-				}
+				// console.log(1111111, data.language, lang, initLang)
+				// if (data.language !== lang) {
+				// 	window.localStorage.setItem('i18n', data.language);
+				// 	window.localStorage.setItem('configId', window.btoa(data.configId));
+				// 	i18nWebim.changeLanguage(initLang);
+				// 	window.location.reload();
+				// }
 				initCrossOriginIframe();
 				ISIFRAME = true;
 				break;
@@ -1086,4 +1138,4 @@ function load_html() {
 }
 
 	
-});
+}

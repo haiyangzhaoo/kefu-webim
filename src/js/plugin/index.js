@@ -41,8 +41,6 @@ function getScriptConfig(){
 // get parameters from easemob.js
 var baseConfig = getScriptConfig();
 
-console.log(11111111, baseConfig)
-
 let lang = window.easemobim.config.language || baseConfig.json.language || 'zh';
 let initLang = lang.split('-')[0];
 if (lang == 'zh-HK') {
@@ -59,7 +57,7 @@ i18next.use(i18nextHttpBackend).init({
 	// defaultNS: 'translation',
 	// languages: ['zhCN', 'enUS'],
 	backend: {
-		loadPath: `${baseConfig.domain}/v1/webimplugin/settings/config/${window.easemobim.config.configId || baseConfig.json.configId}/language/content?language=${initLang}`,
+		loadPath: `${window.easemobim.config.domain || baseConfig.domain}/v1/webimplugin/settings/config/${window.easemobim.config.configId || baseConfig.json.configId}/language/content?language=${initLang}`,
 		addPath: null,
 		parse: ret => {
 			ret = JSON.parse(ret);
