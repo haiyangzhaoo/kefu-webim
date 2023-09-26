@@ -131,6 +131,10 @@ function _ready(){
 	(me.config.dragenable && !utils.isMobile) && _bindResizeHandler(me);
 
 	me.down2Im = new Transfer(me.iframe.id, "down2Im", true);
+	me.down2Im.send({ event: 'init_lang', data: {
+		language: me.config.language,
+		configId: me.config.configId
+	} })
 
 	me.onsessionclosedSt = 0;
 	me.onreadySt = 0;
@@ -270,26 +274,26 @@ function _ready(){
 				}
 				// from Im
 			}, ["toHost"]);
+
+			// 发送ready前缓存的消息
+			for(i = 0, l = me.extendMessageList.length; i < l; i++){
+				me.down2Im.send({ event: _const.EVENTS.EXT, data: me.extendMessageList[i] });
+			}
+			for(i = 0, l = me.textMessageList.length; i < l; i++){
+				me.down2Im.send({ event: _const.EVENTS.TEXTMSG, data: me.textMessageList[i] });
+			}
+
+			typeof me.ready === "function" && me.ready();
+
+			eventListener.add(_const.SYSTEM_EVENT.ACCEPT_INVITATION, function(){
+				// 此处加一个show的事件，类似于点击客服的按钮
+				me.down2Im.send({ event: _const.EVENTS.SHOW});
+				setTimeout(function() {
+					me.open();
+				}, 50);
+			});
 		}
 	}, ["toHost"])
-
-	// 发送ready前缓存的消息
-	for(i = 0, l = me.extendMessageList.length; i < l; i++){
-		me.down2Im.send({ event: _const.EVENTS.EXT, data: me.extendMessageList[i] });
-	}
-	for(i = 0, l = me.textMessageList.length; i < l; i++){
-		me.down2Im.send({ event: _const.EVENTS.TEXTMSG, data: me.textMessageList[i] });
-	}
-
-	typeof me.ready === "function" && me.ready();
-
-	eventListener.add(_const.SYSTEM_EVENT.ACCEPT_INVITATION, function(){
-		// 此处加一个show的事件，类似于点击客服的按钮
-		me.down2Im.send({ event: _const.EVENTS.SHOW});
-		setTimeout(function() {
-			me.open();
-		}, 50);
-	});
 }
 
 function Iframe(config){
