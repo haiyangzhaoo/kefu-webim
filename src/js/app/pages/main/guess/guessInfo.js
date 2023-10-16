@@ -62,7 +62,7 @@ function _addEvents(){
 	// keyup在ios手机原生的输入法是不支持的，但是在ios端第三方的输入法搜狗输入法是支持的，为了兼容性，不能使用keyup事件
 	utils.on(doms.textInput, "input propertychange", function(){
 		// doms.guessArea.style.display = "block";
-
+console.log("change value", value)
 		var value = this.value;
 		newValue = value;
 
@@ -71,7 +71,7 @@ function _addEvents(){
 			// 访客输入第一句话时，会话尚未建立，尚未获知agentId, 暂不进行输入联想请求
 			if(profile.currentOfficialAccount.agentId &&  profile.currentOfficialAccount.agentType == 6){
 				apiHelper.getGuessList(value).then(function(res){
-					if(res && res.data && res.data.entities){
+					if(res && res.data && res.data.entities && res.data.entities.length){
 						doms.guessArea.style.display = "block";
 						doms.guessTips.innerText = "请点击您想咨询的问题！";
 						doms.loading.style.display = "none";
@@ -114,7 +114,7 @@ function createTemplate(data){
 	var doms = loadHtml().doms;
 	var html = "";
 	for(var i = 0; i < data.length; i++){
-		html += "<li>" + data[i] + "</li>";
+		html += "<li>" + data[i].replace("&lt;", "<").replace("&gt;", ">") + "</li>";
 		doms.guessList.innerHTML = html;
 	}
 }
