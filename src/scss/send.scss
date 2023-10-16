@@ -58,7 +58,7 @@
       max-width: 100%;
 			li{
 				// display: table;
-				padding: 5px 8px;
+				padding: 6px 8px;
 				// margin: 0 6px 3px 0;
 				// border-radius: 5px;
 				cursor: pointer;
@@ -71,6 +71,7 @@
           border-bottom: none;
         }
         em, strong{
+          font-weight: normal;
           color: #F44336;
         }
 			}

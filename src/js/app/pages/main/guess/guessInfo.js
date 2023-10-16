@@ -34,6 +34,7 @@ function _addEvents(){
 	var doms = loadHtml().doms;
 	var oldValue = "";
 	var newValue = "";
+  var timer;
 
     // 点击猜你想说按钮上屏
 	utils.live("li", "click", function(e){
@@ -62,32 +63,35 @@ function _addEvents(){
 	// keyup在ios手机原生的输入法是不支持的，但是在ios端第三方的输入法搜狗输入法是支持的，为了兼容性，不能使用keyup事件
 	utils.on(doms.textInput, "input propertychange", function(){
 		// doms.guessArea.style.display = "block";
-console.log("change value", value)
 		var value = this.value;
 		newValue = value;
+
+    clearTimeout(timer);
 
 		// 根据当前文本框输入内容是否发生变化 发起请求
 		if(value && oldValue !== newValue){
 			// 访客输入第一句话时，会话尚未建立，尚未获知agentId, 暂不进行输入联想请求
 			if(profile.currentOfficialAccount.agentId &&  profile.currentOfficialAccount.agentType == 6){
-				apiHelper.getGuessList(value).then(function(res){
-					if(res && res.data && res.data.entities && res.data.entities.length){
-						doms.guessArea.style.display = "block";
-						doms.guessTips.innerText = "请点击您想咨询的问题！";
-						doms.loading.style.display = "none";
-							// 创建模板
-						createTemplate(res.data.entities);
-							// 设置聊天框内容样式
-						// doms.chatWrapper.style.bottom = 300 + "px";
-						doms.chatWrapper.style.bottom = 140 + "px";
-					}
-					else{
-								// 检索不到值时恢复 默认样式
-						doms.guessArea.style.display = "none";
-						doms.guessList.innerHTML = "";
-						doms.chatWrapper.style.bottom = 140 + "px";
-					}
-				});
+				timer = setTimeout(function(){
+          apiHelper.getGuessList(value).then(function(res){
+            if(res && res.data && res.data.entities && res.data.entities.length){
+              doms.guessArea.style.display = "block";
+              doms.guessTips.innerText = "请点击您想咨询的问题！";
+              doms.loading.style.display = "none";
+                // 创建模板
+              createTemplate(res.data.entities);
+                // 设置聊天框内容样式
+              // doms.chatWrapper.style.bottom = 300 + "px";
+              doms.chatWrapper.style.bottom = 140 + "px";
+            }
+            else{
+                  // 检索不到值时恢复 默认样式
+              doms.guessArea.style.display = "none";
+              doms.guessList.innerHTML = "";
+              doms.chatWrapper.style.bottom = 140 + "px";
+            }
+          });
+        }, 200)
 			}
 			else{
 				doms.guessArea.style.display = "none";
@@ -114,7 +118,8 @@ function createTemplate(data){
 	var doms = loadHtml().doms;
 	var html = "";
 	for(var i = 0; i < data.length; i++){
-		html += "<li>" + data[i].replace("&lt;", "<").replace("&gt;", ">") + "</li>";
+    var item = data[i].replace(/&amp;lt;/g, "<").replace(/&amp;gt;/g, ">")
+		html += "<li>" + item + "</li>";
 		doms.guessList.innerHTML = html;
 	}
 }
