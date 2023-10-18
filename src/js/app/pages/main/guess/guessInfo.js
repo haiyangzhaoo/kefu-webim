@@ -4,6 +4,9 @@ var apiHelper = require("../apis");
 var channel = require("../channel");
 var guess_template = require("./guessInfo.html");
 
+var oldValue = "";
+var newValue = "";
+var timer;
 
 function loadHtml(){
 	var htmlStr = _.template(guess_template)();
@@ -32,9 +35,6 @@ function loadHtml(){
 
 function _addEvents(){
 	var doms = loadHtml().doms;
-	var oldValue = "";
-	var newValue = "";
-  var timer;
 
     // 点击猜你想说按钮上屏
 	utils.live("li", "click", function(e){
@@ -135,8 +135,15 @@ function resetStyle(){
 	doms.loading.style.display = "block";
 }
 
+function clearCacheInput(){
+  oldValue = ""
+  newValue = ""
+  clearTimeout(timer)
+}
+
 module.exports = {
 	loadHtml: loadHtml,
 	addEvents: _addEvents,
-	resetStyle: resetStyle
+	resetStyle: resetStyle,
+  clearCacheInput: clearCacheInput
 };
