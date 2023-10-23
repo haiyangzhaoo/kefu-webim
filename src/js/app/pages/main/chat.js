@@ -1363,6 +1363,7 @@ function _bindEvents(){
 			// 清除猜你想说 功能 并 重置样式(根据是否有灰度)
 			if(profile.grayList.guessUSay){
 				guessInfo.resetStyle();
+        guessInfo.clearCacheInput(); // 直接发送内容需要清楚猜你想问缓存的值 否则下次输入同样内容无法触发建议
 			}
 			utils.setStore("isHaveCustomerMsg", true);
 		}

@@ -4,6 +4,9 @@ var apiHelper = require("../apis");
 var channel = require("../channel");
 var guess_template = require("./guessInfo.html");
 
+var oldValue = "";
+var newValue = "";
+var timer;
 
 function loadHtml(){
 	var htmlStr = _.template(guess_template)();
@@ -32,14 +35,13 @@ function loadHtml(){
 
 function _addEvents(){
 	var doms = loadHtml().doms;
-	var oldValue = "";
-	var newValue = "";
 
     // 点击猜你想说按钮上屏
 	utils.live("li", "click", function(e){
 		var curText = this.innerText;
 		channel.sendText(curText);
 		doms.textInput.value = "";
+    oldValue = "";
 		utils.trigger(doms.textInput, "change");
 		// 恢复默认样式
 		doms.guessArea.style.display = "none";
@@ -62,32 +64,35 @@ function _addEvents(){
 	// keyup在ios手机原生的输入法是不支持的，但是在ios端第三方的输入法搜狗输入法是支持的，为了兼容性，不能使用keyup事件
 	utils.on(doms.textInput, "input propertychange", function(){
 		// doms.guessArea.style.display = "block";
-
-		var value = this.value;
+		var value = this.value.length ? this.value.trim() : "";
 		newValue = value;
+
+    clearTimeout(timer);
 
 		// 根据当前文本框输入内容是否发生变化 发起请求
 		if(value && oldValue !== newValue){
 			// 访客输入第一句话时，会话尚未建立，尚未获知agentId, 暂不进行输入联想请求
 			if(profile.currentOfficialAccount.agentId &&  profile.currentOfficialAccount.agentType == 6){
-				apiHelper.getGuessList(value).then(function(res){
-					if(res && res.data && res.data.entities){
-						doms.guessArea.style.display = "block";
-						doms.guessTips.innerText = "请点击您想咨询的问题！";
-						doms.loading.style.display = "none";
-							// 创建模板
-						createTemplate(res.data.entities);
-							// 设置聊天框内容样式
-						// doms.chatWrapper.style.bottom = 300 + "px";
-						doms.chatWrapper.style.bottom = 140 + "px";
-					}
-					else{
-								// 检索不到值时恢复 默认样式
-						doms.guessArea.style.display = "none";
-						doms.guessList.innerHTML = "";
-						doms.chatWrapper.style.bottom = 140 + "px";
-					}
-				});
+				timer = setTimeout(function(){
+          apiHelper.getGuessList(value).then(function(res){
+            if(res && res.data && res.data.entities && res.data.entities.length && newValue.length){ // 如果搜索结果出来的时候 用户清空了输入框 则不再展示结果
+              doms.guessArea.style.display = "block";
+              doms.guessTips.innerText = "请点击您想咨询的问题！";
+              doms.loading.style.display = "none";
+                // 创建模板
+              createTemplate(res.data.entities);
+                // 设置聊天框内容样式
+              // doms.chatWrapper.style.bottom = 300 + "px";
+              doms.chatWrapper.style.bottom = 140 + "px";
+            }
+            else{
+                  // 检索不到值时恢复 默认样式
+              doms.guessArea.style.display = "none";
+              doms.guessList.innerHTML = "";
+              doms.chatWrapper.style.bottom = 140 + "px";
+            }
+          });
+        }, 300)
 			}
 			else{
 				doms.guessArea.style.display = "none";
@@ -96,8 +101,8 @@ function _addEvents(){
 		}
 		// 当值不变时 不触发搜索状态
 		else if(oldValue == newValue){
-			doms.guessArea.style.display = "none";
-			doms.chatWrapper.style.bottom = 140 + "px";
+			// doms.guessArea.style.display = "none";
+			// doms.chatWrapper.style.bottom = 140 + "px";
 		}
 		else if(!value){
 			// 文本框内容清空时 重置样式
@@ -114,7 +119,8 @@ function createTemplate(data){
 	var doms = loadHtml().doms;
 	var html = "";
 	for(var i = 0; i < data.length; i++){
-		html += "<li>" + data[i] + "</li>";
+    var item = data[i].replace(/&amp;lt;/g, "<").replace(/&amp;gt;/g, ">")
+		html += "<li>" + item + "</li>";
 		doms.guessList.innerHTML = html;
 	}
 }
@@ -129,8 +135,15 @@ function resetStyle(){
 	doms.loading.style.display = "block";
 }
 
+function clearCacheInput(){
+  oldValue = ""
+  newValue = ""
+  clearTimeout(timer)
+}
+
 module.exports = {
 	loadHtml: loadHtml,
 	addEvents: _addEvents,
-	resetStyle: resetStyle
+	resetStyle: resetStyle,
+  clearCacheInput: clearCacheInput
 };
