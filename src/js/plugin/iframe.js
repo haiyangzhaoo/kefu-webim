@@ -8,7 +8,8 @@ var pcImgView = require("./pcImgview");
 var InviteBox = require("./inviteView");
 var eventListener = require("@/app/tools/eventListener");
 
-var IM_HTML_PATH = __("config.language") === "zh-CN" ? "/im_cached.html" : "/en-US/im_cached.html";
+// var IM_HTML_PATH = __("config.language") === "en-US" ? "/en-US/im_cached.html" : "/im_cached.html";
+var IM_HTML_PATH = location.pathname.indexOf('en-US') !== -1 ? "/en-US/im_cached.html" : "/im_cached.html";
 var me = this;
 var _st = 0;
 var _startPosition = {
@@ -130,6 +131,10 @@ function _ready(){
 	(me.config.dragenable && !utils.isMobile) && _bindResizeHandler(me);
 
 	me.down2Im = new Transfer(me.iframe.id, "down2Im", true);
+	me.down2Im.send({ event: 'init_lang', data: {
+		language: me.config.language,
+		configId: me.config.configId
+	} })
 
 	me.onsessionclosedSt = 0;
 	me.onreadySt = 0;
@@ -154,137 +159,141 @@ function _ready(){
 	delete me.config.onsessioncreat;
 
 	me.down2Im
-	.send({ event: _const.EVENTS.INIT_CONFIG, data: me.config })
 	.listen(function(msg){
-		var event = msg.event;
-		var data = msg.data;
+		if(msg.event == "i18n_init_ok"){
+			me.down2Im.send({ event: _const.EVENTS.INIT_CONFIG, data: me.config })
+			.listen(function(msg){
+				var event = msg.event;
+				var data = msg.data;
+		
+				if(msg.to !== me.iframe.id){
+					return;
+				}
+		
+				switch(event){
+				case _const.EVENTS.ONREADY:
+					clearTimeout(me.onreadySt);
+					loading.hide();
+					me.onreadySt = setTimeout(function(){
+						me.callbackApi.onready();
+					}, 500);
+					break;
+				case _const.EVENTS.ON_OFFDUTY:
+					loading.hide();
+					break;
+				case _const.EVENTS.SHOW:
+					// 显示聊天窗口
+					me.open();
+					break;
+				case _const.EVENTS.CLOSE:
+					// 最小化聊天窗口
+					me.close();
+					me.callbackApi.onclose();
+					break;
+				case _const.EVENTS.NOTIFY:
+					// 显示浏览器通知
+					notify(data.avatar, data.title, data.brief);
+					break;
+				case _const.EVENTS.SLIDE:
+					// 标题滚动
+					titleSlide.start();
+					break;
+				case _const.EVENTS.RECOVERY:
+					// 标题滚动恢复
+					titleSlide.stop();
+					break;
+				case _const.EVENTS.ONMESSAGE:
+					// 收消息回调
+					me.callbackApi.onmessage(data);
+					break;
+				case _const.EVENTS.ONSESSIONCLOSED:
+					// 结束会话回调，此功能文档中没有
+					clearTimeout(me.onsessionclosedSt);
+					me.onsessionclosedSt = setTimeout(function(){
+						me.callbackApi.onsessionclosed();
+					}, 500);
+					break;
+				case _const.EVENTS.ONSESSIONCREAT:
+					me.callbackApi.onsessioncreat(data);
+					break;
+				case _const.EVENTS.CACHEUSER:
+					// 缓存im username
+					utils.set(
+						data.key,
+						data.value
+					);
+					break;
+				case _const.EVENTS.DRAGREADY:
+					_startPosition.x = +data.x || 0;
+					_startPosition.y = +data.y || 0;
+		
+					utils.addClass(me.iframe, "easemobim-dragging");
+					utils.addClass(me.shadow, "easemobim-dragging");
+		
+					utils.on(document, "mousemove", me._onMouseMove);
+					break;
+				case _const.EVENTS.DRAGEND:
+					_moveend.call(me);
+					break;
+				case _const.EVENTS.SET_ITEM:
+					utils.setStore(msg.data.key, msg.data.value);
+					break;
+				case _const.EVENTS.REQUIRE_URL:
+					me.down2Im.send({ event: _const.EVENTS.UPDATE_URL, data: location.href });
+					break;
+				case _const.EVENTS.SHOW_IMG:
+					pcImgView(data);
+					break;
+				case _const.EVENTS.RESET_IFRAME:
+					me._updatePosition(data);
+					break;
+				case _const.EVENTS.ADD_PROMPT:
+					utils.addClass(me.iframe, "easemobim-has-prompt");
+					break;
+				case _const.EVENTS.REMOVE_PROMPT:
+					utils.removeClass(me.iframe, "easemobim-has-prompt");
+					break;
+				case _const.EVENTS.SCROLL_TO_BOTTOM:
+					me.iframe.scrollIntoView(false);
+					break;
+				case _const.EVENTS.INVITATION_INIT:
+					inviteBox = new InviteBox(data, me.config);
+					// CLOUD-15301 【dev47.35】网页插件：bind按钮集成方式，如果已经加载打开聊天窗口，则处理不自动弹出邀请弹窗
+					!isOpened && inviteBox.beginStartTimer();
+					break;
+				case _const.EVENTS.REOPEN:
+					// 再次打开聊天窗口
+					me.callbackApi.onopen();
+					break;
+				case _const.EVENTS.EVALUATIONSUBMIT:
+					// 提交评价成功
+					me.callbackApi.onEvaluationsubmit();
+					break;
+				default:
+					break;
+				}
+				// from Im
+			}, ["toHost"]);
 
-		if(msg.to !== me.iframe.id){
-			return;
+			// 发送ready前缓存的消息
+			for(i = 0, l = me.extendMessageList.length; i < l; i++){
+				me.down2Im.send({ event: _const.EVENTS.EXT, data: me.extendMessageList[i] });
+			}
+			for(i = 0, l = me.textMessageList.length; i < l; i++){
+				me.down2Im.send({ event: _const.EVENTS.TEXTMSG, data: me.textMessageList[i] });
+			}
+
+			typeof me.ready === "function" && me.ready();
+
+			eventListener.add(_const.SYSTEM_EVENT.ACCEPT_INVITATION, function(){
+				// 此处加一个show的事件，类似于点击客服的按钮
+				me.down2Im.send({ event: _const.EVENTS.SHOW});
+				setTimeout(function() {
+					me.open();
+				}, 50);
+			});
 		}
-
-		switch(event){
-		case _const.EVENTS.ONREADY:
-			clearTimeout(me.onreadySt);
-			loading.hide();
-			me.onreadySt = setTimeout(function(){
-				me.callbackApi.onready();
-			}, 500);
-			break;
-		case _const.EVENTS.ON_OFFDUTY:
-			loading.hide();
-			break;
-		case _const.EVENTS.SHOW:
-			// 显示聊天窗口
-			me.open();
-			break;
-		case _const.EVENTS.CLOSE:
-			// 最小化聊天窗口
-			me.close();
-			me.callbackApi.onclose();
-			break;
-		case _const.EVENTS.NOTIFY:
-			// 显示浏览器通知
-			notify(data.avatar, data.title, data.brief);
-			break;
-		case _const.EVENTS.SLIDE:
-			// 标题滚动
-			titleSlide.start();
-			break;
-		case _const.EVENTS.RECOVERY:
-			// 标题滚动恢复
-			titleSlide.stop();
-			break;
-		case _const.EVENTS.ONMESSAGE:
-			// 收消息回调
-			me.callbackApi.onmessage(data);
-			break;
-		case _const.EVENTS.ONSESSIONCLOSED:
-			// 结束会话回调，此功能文档中没有
-			clearTimeout(me.onsessionclosedSt);
-			me.onsessionclosedSt = setTimeout(function(){
-				me.callbackApi.onsessionclosed();
-			}, 500);
-			break;
-		case _const.EVENTS.ONSESSIONCREAT:
-			me.callbackApi.onsessioncreat(data);
-			break;
-		case _const.EVENTS.CACHEUSER:
-			// 缓存im username
-			utils.set(
-				data.key,
-				data.value
-			);
-			break;
-		case _const.EVENTS.DRAGREADY:
-			_startPosition.x = +data.x || 0;
-			_startPosition.y = +data.y || 0;
-
-			utils.addClass(me.iframe, "easemobim-dragging");
-			utils.addClass(me.shadow, "easemobim-dragging");
-
-			utils.on(document, "mousemove", me._onMouseMove);
-			break;
-		case _const.EVENTS.DRAGEND:
-			_moveend.call(me);
-			break;
-		case _const.EVENTS.SET_ITEM:
-			utils.setStore(msg.data.key, msg.data.value);
-			break;
-		case _const.EVENTS.REQUIRE_URL:
-			me.down2Im.send({ event: _const.EVENTS.UPDATE_URL, data: location.href });
-			break;
-		case _const.EVENTS.SHOW_IMG:
-			pcImgView(data);
-			break;
-		case _const.EVENTS.RESET_IFRAME:
-			me._updatePosition(data);
-			break;
-		case _const.EVENTS.ADD_PROMPT:
-			utils.addClass(me.iframe, "easemobim-has-prompt");
-			break;
-		case _const.EVENTS.REMOVE_PROMPT:
-			utils.removeClass(me.iframe, "easemobim-has-prompt");
-			break;
-		case _const.EVENTS.SCROLL_TO_BOTTOM:
-			me.iframe.scrollIntoView(false);
-			break;
-		case _const.EVENTS.INVITATION_INIT:
-			inviteBox = new InviteBox(data, me.config);
-			// CLOUD-15301 【dev47.35】网页插件：bind按钮集成方式，如果已经加载打开聊天窗口，则处理不自动弹出邀请弹窗
-			!isOpened && inviteBox.beginStartTimer();
-			break;
-		case _const.EVENTS.REOPEN:
-			// 再次打开聊天窗口
-			me.callbackApi.onopen();
-			break;
-		case _const.EVENTS.EVALUATIONSUBMIT:
-			// 提交评价成功
-			me.callbackApi.onEvaluationsubmit();
-			break;
-		default:
-			break;
-		}
-		// from Im
-	}, ["toHost"]);
-
-	// 发送ready前缓存的消息
-	for(i = 0, l = me.extendMessageList.length; i < l; i++){
-		me.down2Im.send({ event: _const.EVENTS.EXT, data: me.extendMessageList[i] });
-	}
-	for(i = 0, l = me.textMessageList.length; i < l; i++){
-		me.down2Im.send({ event: _const.EVENTS.TEXTMSG, data: me.textMessageList[i] });
-	}
-
-	typeof me.ready === "function" && me.ready();
-
-	eventListener.add(_const.SYSTEM_EVENT.ACCEPT_INVITATION, function(){
-		// 此处加一个show的事件，类似于点击客服的按钮
-		me.down2Im.send({ event: _const.EVENTS.SHOW});
-		setTimeout(function() {
-			me.open();
-		}, 50);
-	});
+	}, ["toHost"])
 }
 
 function Iframe(config){

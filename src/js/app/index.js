@@ -2,6 +2,111 @@
 // 2. 管理初始化
 // 3. 管理通信
 // 4. 管理切换
+
+var getToHost = require("@/app/common/transfer");
+var utils = require("@/common/utils");
+const OpenCC = require('opencc-js');
+const i18next = require("i18next");
+const i18nextHttpBackend = require("i18next-http-backend");
+
+const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
+let search = window.location ? window.location.search : '';
+let searchParams = {}
+// JS集成的时候，也是页面加载完成后执行监听事件获取config配置才开始渲染页面，因此首先将获取的语言保存在本地，刷新页面重新请求，以本地保存的作为第二条件请求语言包。
+// 改变语言刷新本地，因此保存在本地
+let localI18n = window.localStorage.getItem('i18n');
+let localConfigId = window.atob(window.localStorage.getItem('configId'));
+search.substr(1).split('&').forEach(function(v) {
+	let [key, val] = v.split('=');
+	searchParams[key] = val;
+});
+// 链接上语言优先级最高
+// let lang = searchParams.language || localI18n || 'zh';
+// let initLang = lang.split('-')[0];
+// if (lang == 'zh-HK') {
+// 	initLang = lang;
+// }
+
+var i18nHttp = i18next.use(i18nextHttpBackend);
+var initLang;
+var lang;
+
+// 根据是iframe还是网页，获取后再去执行加载语言包
+if (!utils.isTop) { // js
+	getToHost.listen(function (msg) {
+		if (msg && msg.event == "init_lang") {
+			lang = msg.data.language || 'zh';
+			let configId = msg.data.configId;
+
+			initLang = lang.split('-')[0];
+			if (lang == 'zh-HK') {
+				initLang = lang;
+			}
+
+			i18nHttp.init({
+				lng: initLang,
+				fallbackLng: false,
+				keySeparator: ".",
+				nsSeparator: false,
+				saveMissing: true,
+				// ns: ['translation'],
+				// defaultNS: 'translation',
+				// languages: ['zhCN', 'enUS'],
+				backend: {
+					loadPath: `/v1/webimplugin/settings/config/${configId}/language/content?language=${initLang}`,
+					addPath: null,
+					parse: ret => {
+						 ret = JSON.parse(ret);
+						let data = ret.status == 'OK' ? ret.entity : {};
+						initLang && Object.keys(data).length && (data.config.language = lang);
+			
+						return data;
+					}
+				},
+			}, callback);
+		}
+	})
+} else {
+	lang = searchParams.language || 'zh';
+	initLang = lang.split('-')[0];
+	if (lang == 'zh-HK') {
+		initLang = lang;
+	}
+
+	i18nHttp.init({
+		lng: initLang,
+		fallbackLng: false,
+		keySeparator: ".",
+		nsSeparator: false,
+		saveMissing: true,
+		// ns: ['translation'],
+		// defaultNS: 'translation',
+		// languages: ['zhCN', 'enUS'],
+		backend: {
+			loadPath: `/v1/webimplugin/settings/config/${searchParams.configId}/language/content?language=${initLang}`,
+			addPath: null,
+			parse: ret => {
+				 ret = JSON.parse(ret);
+				let data = ret.status == 'OK' ? ret.entity : {};
+				initLang && Object.keys(data).length && (data.config.language = lang);
+	
+				return data;
+			}
+		},
+	}, callback);
+}
+
+function callback(err, t) {
+	console.log('1111111html', initLang, lang, err)
+	window.i18nWebim = i18next;
+	if (lang == 'zh-HK') {
+		window.__ = function() {
+			return converter(t.apply(null, arguments));
+		}
+	} else {
+		window.__ = t;
+	}
+
 require("es6-promise").polyfill();
 require("@/common/polyfill");
 require("./libs/modernizr");
@@ -10,7 +115,7 @@ require("underscore");
 require("jquery");
 window._ = require("underscore");
 var dd = require("./libs/sdk/ddsdk")
-var utils = require("@/common/utils");
+// var utils = require("@/common/utils");
 var chat = require("./pages/main/chat");
 var body_template = require("../../template/body.html");
 var main = require("./pages/main/init");
@@ -21,7 +126,7 @@ var _const = require("@/common/const");
 var profile = require("@/app/tools/profile");
 var handleConfig = commonConfig.handleConfig;
 var doWechatAuth = require("@/app/common/wechat");
-var getToHost = require("@/app/common/transfer");
+// var getToHost = require("@/app/common/transfer");
 var eventListener = require("@/app/tools/eventListener");
 var fromUserClick = false;
 var Tab = require("@/common/uikit/tab");
@@ -79,6 +184,11 @@ var iframeData; // 新菜单页的数据
 
 var dingdingData;
 load_html();
+getToHost.send({
+	event: "i18n_init_ok",
+	data: true
+});
+
 if (utils.isTop) {
 	commonConfig.h5_mode_init();
 	initCrossOriginIframe();
@@ -101,6 +211,13 @@ else {
 			case _const.EVENTS.INIT_CONFIG:
 				getToHost.to = data.parentId;
 				commonConfig.setConfig(data);
+				// console.log(1111111, data.language, lang, initLang)
+				// if (data.language !== lang) {
+				// 	window.localStorage.setItem('i18n', data.language);
+				// 	window.localStorage.setItem('configId', window.btoa(data.configId));
+				// 	i18nWebim.changeLanguage(initLang);
+				// 	window.location.reload();
+				// }
 				initCrossOriginIframe();
 				ISIFRAME = true;
 				break;
@@ -539,7 +656,8 @@ function parseUrlSearch(url) {
 
 // todo: rename this function
 function handleCfgData(relevanceList, status) {
-	var defaultStaticPath = __("config.language") === "zh-CN" ? "static" : "../static";
+	// var defaultStaticPath = __("config.language") === "en-US" ? "../static" : "static";
+	var defaultStaticPath = location.pathname.indexOf('en-US') !== -1 ? "../static" : "static";
 	// default value
 
 	var targetItem;
@@ -573,7 +691,9 @@ function handleCfgData(relevanceList, status) {
 		console.log("mismatched channel, use default.");
 	}
 	var params = parseUrlSearch(window.location.href);
-	var initlanguage = __("config.language") === "zh-CN" ? "zh" : "en";
+	var initlanguage = {'zh-CN': 'zh', 'en-US': 'en'}[__("config.language")] || initLang || __("config.language");
+	if (initLang == 'zh-HK') initlanguage = 'zh-tw'
+
 	commonConfig.setConfig({
 		logo: commonConfig.getConfig().logo || { enabled: !!targetItem.tenantLogo, url: targetItem.tenantLogo },
 		toUser: targetItem.imServiceNumber,
@@ -1015,4 +1135,7 @@ function load_html() {
 	utils.appendHTMLToBody(_.template(body_template)(domData));
 
 	chat.getDom();
+}
+
+	
 }

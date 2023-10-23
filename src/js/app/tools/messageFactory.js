@@ -351,7 +351,7 @@ function genMsgContent(msg, opt){
 			}
 			// 英文状态开关可能会有问题，这里用语言状态来判断
 			else{
-				ctrlArgs.label = __("config.language") === "zh-CN" ? ctrlArgs.label : "Chat with agent";
+				ctrlArgs.label = __("config.language") === "en-US" ? "Chat with agent" : ctrlArgs.label;
 				html += "<div class=\"em-btn-list\" style=\"max-width: 360px;margin: 0 auto;\">"
 					+ "<button "
 						+ "class=\"white bg-color border-color bg-hover-color-dark js_robotTransferBtn " + disabledClass + "\" "
@@ -603,7 +603,7 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 		}
 		// 英文状态开关可能会有问题，这里用语言状态来判断
 		else{
-			ctrlArgs.label = __("config.language") === "zh-CN" ? ctrlArgs.label : "Chat with agent";
+			ctrlArgs.label = __("config.language") === "en-US" ? "Chat with agent" : ctrlArgs.label;
 			html += "<div class=\"em-btn-list\" style=\"padding:0\">"
 				+ "<button "
 					+ "class=\"white fg-color border-color  js_robotTransferBtn  TransferBtnColor" + disabledClass + "\" "
