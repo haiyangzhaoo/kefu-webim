@@ -412,7 +412,7 @@ function setUserInfo(targetUserInfo) {
 	var params = parseUrlSearch(window.location.href);
 	if(params.originType && (params.originType == 'dingtalk')){
 		return new Promise(function (resolve) {
-			if (dd.env.platform !== "notIndingtalk") {
+			if (dd.env.platform!=="notInDingTalk") {
 				dd.ready(function() {
 					// dd.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
 					var apiHelper = require("@/app/common/apiHelper");
