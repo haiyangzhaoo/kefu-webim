@@ -6,6 +6,7 @@ var profile = require("./profile");
 var textParser = require("./textParser");
 var moment = require("moment");
 var apiHelper = require("../pages/main/apis");
+var channel = require("../pages/main/channel");
 
 var LOADING = Modernizr.inlinesvg ? _const.loadingSvg : "<img src=\"//kefu.easemob.com__WEBIM_SLASH_KEY_PATH__/webim/static/img/loading.gif\" width=\"20\" style=\"margin-top:10px;\"/>";
 
@@ -57,6 +58,7 @@ function genMsgContent(msg, opt){
 			html = "<span class=\"text\">";
 			html += value;
 			html += "</span>";
+
 			break;
 		}
 		else if(laiye){
@@ -141,9 +143,11 @@ function genMsgContent(msg, opt){
 			else{
 				newValue = value;
 			}
-			html = "<span class=\"text\">";
-			html += newValue;
-			html += "</span>";
+      if(newValue) {
+        html = "<span class=\"text\">";
+        html += newValue;
+        html += "</span>";
+      }
 			html += msg.list;
 			break;
 		}
@@ -381,6 +385,16 @@ function genMsgContent(msg, opt){
 	return html;
 }
 
+// 点击时，需要单独上屏
+function dhRichTextHandler() {
+  document.querySelectorAll('.dh_rich_text li a').forEach(function (item) {
+    // 点击内部的 li 时，发送消息
+    item.onclick = function (e) {
+      var value = e.target.name;
+      channel.sendText(value)
+    }
+  })
+}
 
 function _getAvatar(msg){
 	var officialAccountType = utils.getDataByPath(msg, "ext.weichat.official_account.type");
@@ -625,6 +639,8 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 	// wrapper 结尾
 	html += "</div>";
 	dom.innerHTML = html;
+
+  dhRichTextHandler()
 	return dom;
 }
 
