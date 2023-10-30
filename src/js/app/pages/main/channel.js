@@ -802,16 +802,16 @@ function _handleMessage(msg, options){
 		message.subtype = type;
 		message.list = "<div class=\"em-btn-list\">";
 		_.each(msg.ext.msgtype.choice.items, function(item, index){
-			var className = "";
-			var color = "";
-			if(profile.shouldMsgActivated(serviceSessionId)){
-				className = themeCustomColor ? "" : "fg-color";
-				color = themeCustomColor;
-			}
-			else{
-				className = "disabled";
-				color = "";
-			}
+			var className = themeCustomColor ? "" : "fg-color";;
+			var color = themeCustomColor;
+			// if(profile.shouldMsgActivated(serviceSessionId)){
+			// 	className = themeCustomColor ? "" : "fg-color";
+			// 	color = themeCustomColor;
+			// }
+			// else{
+			// 	className = "disabled";
+			// 	color = "";
+			// }
 
 
 			if(options.answerSource == "WELCOME"){
