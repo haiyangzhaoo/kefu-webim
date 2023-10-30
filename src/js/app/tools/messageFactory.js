@@ -385,17 +385,6 @@ function genMsgContent(msg, opt){
 	return html;
 }
 
-// 点击时，需要单独上屏
-function dhRichTextHandler() {
-  document.querySelectorAll('.dh_rich_text li a').forEach(function (item) {
-    // 点击内部的 li 时，发送消息
-    item.onclick = function (e) {
-      var value = e.target.name;
-      channel.sendText(value)
-    }
-  })
-}
-
 function _getAvatar(msg){
 	var officialAccountType = utils.getDataByPath(msg, "ext.weichat.official_account.type");
 	var avatarFromOfficialAccountExt = utils.getDataByPath(msg, "ext.weichat.official_account.img");
@@ -640,7 +629,6 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 	html += "</div>";
 	dom.innerHTML = html;
 
-  dhRichTextHandler()
 	return dom;
 }
 

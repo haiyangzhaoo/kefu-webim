@@ -160,6 +160,8 @@ module.exports = function(opt){
 				$(button).css("cssText", "color: " + color + " !important");
 			}
 		}
+
+    dhRichTextHandler();
 	}
 
 	function _appendDate(timestamp, isHistory){
@@ -316,4 +318,15 @@ module.exports = function(opt){
 		var D = date.getDate() + " ";
 		return Y + M + D;
 	}
+
+  // 敦煌富文本 a 点击时，需要单独上屏
+  function dhRichTextHandler() {
+    document.querySelectorAll('.dh_rich_text li a').forEach(function (item) {
+      // 点击内部的 li 时，发送消息
+      item.onclick = function (e) {
+        var value = e.target.name;
+        channel.sendText(value)
+      }
+    })
+  }
 };
