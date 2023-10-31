@@ -148,7 +148,9 @@ function genMsgContent(msg, opt){
         html += newValue;
         html += "</span>";
       }
-			html += msg.list;
+      if(msg.list) {
+        html += msg.list;
+      }
 			break;
 		}
 		else if(laiye){
