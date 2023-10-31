@@ -148,7 +148,8 @@ function genMsgContent(msg, opt){
         html += newValue;
         html += "</span>";
       }
-      if(msg.list) {
+      // 非空才添加
+      if(isEmptyMsgList(msg.list)) {
         html += msg.list;
       }
 			break;
@@ -410,6 +411,10 @@ function _getAvatar(msg){
 function _getRulaiHtml(content){
 
 }
+
+function isEmptyMsgList(str) {
+  return str === '<div class="em-btn-list"></div>';
+} 
 
 function genDomFromMsg(msg, isReceived, isHistory, opt){
 	opt = opt || {};
