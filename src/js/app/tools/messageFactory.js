@@ -149,7 +149,7 @@ function genMsgContent(msg, opt){
         html += "</span>";
       }
       // 非空才添加
-      if(isEmptyMsgList(msg.list)) {
+      if(!isEmptyMsgList(msg.list)) {
         html += msg.list;
       }
 			break;
