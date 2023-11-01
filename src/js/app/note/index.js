@@ -1,70 +1,3 @@
-const OpenCC = require('opencc-js');
-const i18next = require("i18next");
-const i18nextHttpBackend = require("i18next-http-backend");
-
-const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
-
-function getNoteConfig() {
-	var i;
-	var len;
-	var tmp = [];
-	var obj = {};
-	// 需要测兼容性
-	var src = document.location.search;
-	var arr = src.slice(1).split("&");
-	for (i = 0, len = arr.length; i < len; i++) {
-		tmp = arr[i].split("=");
-		tmp[1] = window.atob
-			? window.atob(tmp[1])
-			: tmp[1];
-		obj[tmp[0]] = tmp.length > 1
-			? JSON.parse(decodeURIComponent(tmp[1]))
-			: "";
-	}
-	return obj;
-}
-// url 传递的参数
-var config = getNoteConfig().config || {};
-
-// 改变语言刷新本地，因此保存在本地
-// let localI18n = window.localStorage.getItem('i18n');
-let lang = config.language || 'zh';
-let initLang = lang.split('-')[0];
-if (lang == 'zh-HK') {
-	initLang = lang;
-}
-
-i18next.use(i18nextHttpBackend).init({
-	lng: initLang,
-	fallbackLng: false,
-	keySeparator: ".",
-	nsSeparator: false,
-	saveMissing: true,
-	// ns: ['translation'],
-	// defaultNS: 'translation',
-	// languages: ['zhCN', 'enUS'],
-	backend: {
-		loadPath: `/v1/webimplugin/settings/config/${config.configId}/language/content?language=${initLang}`,
-		addPath: null,
-		parse: ret => {
-			ret = JSON.parse(ret);
-			let data = ret.status == 'OK' ? ret.entity : {};
-			initLang && Object.keys(data).length && (data.config.language = lang);
-
-			return data;
-		}
-	},
-}, function(err, t) {
-	console.log('1111111note', initLang, err)
-	window.i18nWebim = i18next;
-	if (lang == 'zh-HK') {
-		window.__ = function() {
-			return converter(t.apply(null, arguments));
-		}
-	} else {
-		window.__ = t;
-	}
-
 require("underscore");
 require("es6-promise").polyfill();
 require("@/common/polyfill");
@@ -80,6 +13,8 @@ var getToHost = require("@/app/common/transfer");
 var _const = require("@/common/const");
 
 var isSending = false;
+// url 传递的参数
+var config = getNoteConfig().config || {};
 
 var dom = utils.createElementFromHTML([
 	"<div class=\"em-dialog ticket satisfaction \">",
@@ -187,6 +122,26 @@ var _getCategories = _.once(function () {
 		}
 	});
 });
+
+function getNoteConfig() {
+	var i;
+	var len;
+	var tmp = [];
+	var obj = {};
+	// 需要测兼容性
+	var src = document.location.search;
+	var arr = src.slice(1).split("&");
+	for (i = 0, len = arr.length; i < len; i++) {
+		tmp = arr[i].split("=");
+		tmp[1] = window.atob
+			? window.atob(tmp[1])
+			: tmp[1];
+		obj[tmp[0]] = tmp.length > 1
+			? JSON.parse(decodeURIComponent(tmp[1]))
+			: "";
+	}
+	return obj;
+}
 
 function _createTicket() {
 	Promise.all([
@@ -323,4 +278,3 @@ utils.live(".wrapper-title .icon-back-new", "click", function () {
 		window.parent.postMessage({ closeNote: true }, "*");
 	}
 });
-})

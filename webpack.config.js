@@ -7,16 +7,14 @@
 
 const path = require("path");
 const webpack = require("webpack");
-// const i18next = require("i18next");
-// const _zh_cn_map_ = require("./src/i18n/zh-CN");
-// const _en_us_map_ = require("./src/i18n/en-US");
+const i18next = require("i18next");
+const _zh_cn_map_ = require("./src/i18n/zh-CN");
+const _en_us_map_ = require("./src/i18n/en-US");
 
 const argv = require("yargs").argv;
 const lang = argv.lang || "zh-CN";
 const tmpVersion = "local_" + (Math.floor(Math.random() * 1e6)).toString();
 const VERSION = process.env.TAG_NAME || tmpVersion;
-process.env.language = lang
-
 
 // package 中的 KEY_PATH 必须填，当活文档
 var KEY_PATH = process.env.KEY_PATH;
@@ -33,21 +31,21 @@ var appPageCached;
 var taskList;
 
 
-// i18next.init({
-// 	lng: lang,
-// 	fallbackLng: false,
-// 	keySeparator: ".",
-// 	nsSeparator: false,
-// 	saveMissing: true,
-// 	resources: {
-// 		"zh-CN": {
-// 			translation: _zh_cn_map_,
-// 		},
-// 		"en-US": {
-// 			translation: _en_us_map_,
-// 		},
-// 	},
-// });
+i18next.init({
+	lng: lang,
+	fallbackLng: false,
+	keySeparator: ".",
+	nsSeparator: false,
+	saveMissing: true,
+	resources: {
+		"zh-CN": {
+			translation: _zh_cn_map_,
+		},
+		"en-US": {
+			translation: _en_us_map_,
+		},
+	},
+});
 
 commonConfig = {
 	resolve: {
@@ -189,13 +187,13 @@ commonConfig = {
 					flags: "g",
 				},
 			},
-			// {
-			// 	test: /\.js$/,
-			// 	loader: "i18next-loader",
-			// 	query: {
-			// 		quotes: "\"",
-			// 	},
-			// },
+			{
+				test: /\.js$/,
+				loader: "i18next-loader",
+				query: {
+					quotes: "\"",
+				},
+			},
 			// 字体文件
 			{
 				test: /\.(eot|svg|ttf|woff|woff2)$/,

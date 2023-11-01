@@ -45,10 +45,8 @@
     "crypto-js": "^3.1.9-1",
     "easemob-kefu-webim": "^1.1.9",
     "es6-promise": "=4.1.1",
-    "i18next-http-backend": "^2.2.1",
     "jquery": "^1.12.4",
     "moment": "=2.18.1",
-    "opencc-js": "^1.0.5",
     "swiper": "=4.2.0",
     "underscore": "=1.13.1"
   }

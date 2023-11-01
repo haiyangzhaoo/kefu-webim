@@ -1759,14 +1759,14 @@ function _initSession(){
       const videoSwitch = config.toolbar.videoSwitch
       if(profile.grayList.agoraVideo){
         videoChatAgora.init({
-          videoSwitch: videoSwitch,
+          videoSwitch,
           triggerButton: doms.videoInviteButton,
           parentContainer: doms.imChat,
         });
       }
       else{
         videoChat.init({
-          videoSwitch: videoSwitch,
+          videoSwitch,
           triggerButton: doms.videoInviteButton,
           parentContainer: doms.imChat,
         });

@@ -3,8 +3,7 @@ var _const = require("@/common/const");
 var profile = require("@/app/tools/profile");
 var commonConfig = require("@/common/config");
 
-// var NOTE_HTML_PATH = __("config.language") === "en-US" ? "/en-US/note.html" : "/note.html";
-var NOTE_HTML_PATH = location.pathname.indexOf('en-US') !== -1 ? "/en-US/note.html" : "/note.html";
+var NOTE_HTML_PATH = __("config.language") === "zh-CN" ? "/note.html" : "/en-US/note.html";
 
 function Iframe(config){
 	// 自定义主题色
@@ -92,16 +91,6 @@ Iframe.prototype.open = function(config){
 	utils.on(this.iframe, "load", function(){
 		utils.removeClass(me.noteWrapper, "hide");
 	});
-	var comConfig = commonConfig.getConfig();
-	let search = window.location ? window.location.search : '';
-	let searchParams = {}
-	// 改变语言刷新本地，因此保存在本地
-	search.substr(1).split('&').forEach(function(v) {
-		let [key, val] = v.split('=');
-		searchParams[key] = val;
-	});
-	config.language = searchParams.language || comConfig.language;
-	
 	base64 = encodeURIComponent(JSON.stringify(config));
 	base64 = window.btoa
 		? window.btoa(base64)
