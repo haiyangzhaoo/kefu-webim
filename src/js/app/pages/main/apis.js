@@ -1666,6 +1666,30 @@ function initLanguage(language, visitorUserName){
 	});
 }
 
+function getSessionClosedDialog(){
+	return new Promise(function(resolve, reject){
+		api("getSessionClosedDialog", {
+			tenantId: config.tenantId,
+		}, function(res){
+			resolve(res);
+		}, function(err){
+			reject(err);
+		});
+	});
+}
+
+function getSessionClosedDialogUrl(){
+	return new Promise(function(resolve, reject){
+		api("getSessionClosedDialogUrl", {
+			tenantId: config.tenantId,
+		}, function(res){
+			resolve(res);
+		}, function(err){
+			reject(err);
+		});
+	});
+}
+
 
 module.exports = {
 	getGrayList: getGrayList,
@@ -1752,6 +1776,8 @@ module.exports = {
 	getVideoH5Status: getVideoH5Status,
 	readMessageLastRead: readMessageLastRead,
 	initLanguage: initLanguage,
+	getSessionClosedDialog: getSessionClosedDialog,
+	getSessionClosedDialogUrl: getSessionClosedDialogUrl,
 	update: function(cfg){
 		config = cfg;
 	}

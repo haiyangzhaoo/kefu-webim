@@ -8,6 +8,7 @@ var eventListener = require("@/app/tools/eventListener");
 var channel = require("./channel");
 var profile = require("@/app/tools/profile");
 var satisfaction = require("./satisfaction");
+var customUrl = require("./customUrl");
 var imgView = require("./imgview");
 var NoteIframe = require("./noteIframe");
 var initPasteImage = require("./paste");
@@ -1806,6 +1807,7 @@ function _initSession(){
 
 			_initSystemEventListener();
 			satisfaction.init();
+			customUrl.init();
 			initAgentInputStatePoller();
 			initAgentStatusPoller();
 			initVisitorStatusPoller();
