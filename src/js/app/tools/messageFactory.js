@@ -524,8 +524,10 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 	if(profile.grayList.rulaiRobotRichText && isJsonString(data)){
 		data = JSON.parse(data);
 		data.forEach(function(item){
-			if(item.type == "richText"){
-				var newContent = "";
+      
+      if(item.type == "richText"){
+        var newContent = "";
+
 				if(item.content.indexOf("<img") > -1){
 					var reg = new RegExp("<img", "g");
 					newContent = item.content.replace(reg, "<img class='em-widget-imgview' ");
@@ -533,6 +535,12 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 				else{
 					newContent = item.content;
 				}
+
+        // 针对敦煌富文本消息，将其中的 id 改为 class ，方便做事件绑定
+        if(item.content.indexOf("dh_rich_text") > -1) {
+          var updatedText = newContent.replace(/id=('[^']*'|"[^"]*")/g, 'class=$1');
+          newContent = updatedText;
+        } 
 
 				msg.data = newContent;
 				msg.rulai = true;
