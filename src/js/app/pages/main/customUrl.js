@@ -19,13 +19,13 @@ function _init(){
 			apiHelper.getSessionClosedDialogUrl().then(function(res){
 				dom = utils.createElementFromHTML([
 					"<div class=\"wrapper\">",
-					"<div class=\"wrapper-title\"><i class=\"icon-close\"></i></div>",
+					"<div class=\"wrapper-title custom-url-title\"><i class=\"icon-close\"></i></div>",
 					"<iframe  src=\""+ res.data.entities[0].optionValue +"\" frameborder=\"0\"></iframe>",
 					"</div>"
 				].join(""))
 			
 	
-	utils.live(".wrapper-title .icon-close","click",function(){
+	utils.live(".custom-url-title .icon-close","click",function(){
 		// dialog && dialog.hide();
 		dialog && dialog.el.remove();
 	});
@@ -62,11 +62,7 @@ function _init(){
 }
 
 function show(inviteId, serviceSessionId, evaluateWay){
-	
 	_init();
-		
-	dialog && dialog.show();
-
 }
 
 function init(){
