@@ -232,7 +232,7 @@ function _setLogo(){
 		var logoImgWapper = document.querySelector(".em-widget-tenant-logo");
 		var swiperSlideObj = document.createDocumentFragment();
 		config.logo.content.map(function(item) {
-			var swiperSlide = $('<div class="swiper-slide"><a href="'+ item.url +'" target="_blank" style="background-image:url('+ item.thumail +')"></a></div>');
+			var swiperSlide = $('<div class="swiper-slide"><a href="'+ (item.url || 'javascript:void(0)') +'" target="'+ (item.url && '_blank') +'" style="background-image:url('+ item.thumail +')"></a></div>');
 			swiperSlideObj.appendChild(swiperSlide[0]);
 		});
 		logoImgWapper.getElementsByClassName('swiper-wrapper')[0].appendChild(swiperSlideObj);
