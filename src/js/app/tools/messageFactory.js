@@ -6,6 +6,7 @@ var profile = require("./profile");
 var textParser = require("./textParser");
 var moment = require("moment");
 var apiHelper = require("../pages/main/apis");
+var channel = require("../pages/main/channel");
 
 var LOADING = Modernizr.inlinesvg ? _const.loadingSvg : "<img src=\"//kefu.easemob.com__WEBIM_SLASH_KEY_PATH__/webim/static/img/loading.gif\" width=\"20\" style=\"margin-top:10px;\"/>";
 
@@ -57,6 +58,7 @@ function genMsgContent(msg, opt){
 			html = "<span class=\"text\">";
 			html += value;
 			html += "</span>";
+
 			break;
 		}
 		else if(laiye){
@@ -141,10 +143,15 @@ function genMsgContent(msg, opt){
 			else{
 				newValue = value;
 			}
-			html = "<span class=\"text\">";
-			html += newValue;
-			html += "</span>";
-			html += msg.list;
+      if(newValue) {
+        html = "<span class=\"text\">";
+        html += newValue;
+        html += "</span>";
+      }
+      // 非空才添加
+      if(isEmptyMsgList(msg.list)) {
+        html += msg.list;
+      }
 			break;
 		}
 		else if(laiye){
@@ -381,7 +388,6 @@ function genMsgContent(msg, opt){
 	return html;
 }
 
-
 function _getAvatar(msg){
 	var officialAccountType = utils.getDataByPath(msg, "ext.weichat.official_account.type");
 	var avatarFromOfficialAccountExt = utils.getDataByPath(msg, "ext.weichat.official_account.img");
@@ -405,6 +411,10 @@ function _getAvatar(msg){
 function _getRulaiHtml(content){
 
 }
+
+function isEmptyMsgList(str) {
+  return str === '<div class="em-btn-list"></div>';
+} 
 
 function genDomFromMsg(msg, isReceived, isHistory, opt){
 	opt = opt || {};
@@ -625,6 +635,7 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 	// wrapper 结尾
 	html += "</div>";
 	dom.innerHTML = html;
+
 	return dom;
 }
 

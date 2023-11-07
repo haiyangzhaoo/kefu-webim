@@ -106,12 +106,12 @@ function _initSystemEventListener(){
 		_const.SYSTEM_EVENT.SESSION_CLOSED,
 	], function(officialAccount){
 		// 所有的 list 子类消息
-		var allListBtn1 = document.querySelectorAll(".msgtype-robotList .em-btn-list button");
+		// var allListBtn1 = document.querySelectorAll(".msgtype-robotList .em-btn-list button");
 		var allListBtn2 = document.querySelectorAll(".msgtype-txt .em-btn-list button");
 		var allListBtn3 = document.querySelectorAll(".msgtype-img .em-btn-list button");
-		var all = _.toArray(allListBtn1)
-			.concat(_.toArray(allListBtn2))
-			.concat(_.toArray(allListBtn3));
+		var all = _.toArray(allListBtn2)
+			.concat(_.toArray(allListBtn3))
+			// .concat(_.toArray(allListBtn3));
 		_.each(all, function(robotBtn){
 			utils.addClass(robotBtn, "disabled");
 		});
@@ -692,13 +692,21 @@ function _bindEvents(){
 	// 机器人列表
 	utils.live("button.js_robotbtn", "click", function(e){
 		if(!utils.hasClass(e.target, "disabled")){
-			channel.sendText(this.innerText, {
+      // 这里为敦煌定制(格式很坑)
+      var dhCallback = e.target.dataset.callback
+      var dhNode = e.target.dataset.node
+      var text = dhCallback ? dhCallback : this.innerText
+      
+			channel.sendText(text, {
 				ext: {
 					msgtype: {
 						choice: {
 							menuid: this.getAttribute("data-id")
 						}
-					}
+					},
+          robot: {
+            node: dhNode
+          }
 				}
 			});
 		}
