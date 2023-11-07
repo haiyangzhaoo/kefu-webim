@@ -733,7 +733,8 @@ body.window-demo{
 		border-radius: 2px;
 		overflow: hidden;
 		> div {
-			height: 100% !important;
+			height: 100%;
+			width: 100% !important;
 			.swiper-slide {
 				> a {
 					display: block;
