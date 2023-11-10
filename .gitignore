@@ -4,13 +4,11 @@ package-lock.json
 
 .vscode
 
-# en-US/static
-# en-US/easemob.js
-# en-US/im_cached.html
-# en-US/im.html
-# en-US/note.html
-en-US
-
+en-US/static
+en-US/easemob.js
+en-US/im_cached.html
+en-US/im.html
+en-US/note.html
 
 static/css
 static/js/em-transfer.js

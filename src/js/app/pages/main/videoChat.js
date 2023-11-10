@@ -39,8 +39,7 @@ var timerBarDom, timerLabel;
 var service;
 var inviteByVisitor = false; //访客邀请的
 
-// var STATIC_PATH = __("config.language") === "en-US" ? "../static" : "static";
-var STATIC_PATH = location.pathname.indexOf('en-US') !== -1 ? "../static" : "static";
+var STATIC_PATH = __("config.language") === "zh-CN" ? "static" : "../static";
 
 module.exports = {
 	init: init,

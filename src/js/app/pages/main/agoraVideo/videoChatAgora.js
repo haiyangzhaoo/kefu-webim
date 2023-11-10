@@ -49,8 +49,7 @@ var userVideo0,userVideo1;
 var dragMove = require("../uikit/drag")
 var cams = []
 
-// var STATIC_PATH = __("config.language") === "en-US" ? "../static" : "static";
-var STATIC_PATH = location.pathname.indexOf('en-US') !== -1 ? "../static" : "static";
+var STATIC_PATH = __("config.language") === "zh-CN" ? "static" : "../static";
 
 module.exports = {
 	init: init,
@@ -195,14 +194,11 @@ function _init(){
 					}
 
 					AgoraRTC.getCameras().then(function(cams) {
-						var newCam = cams.find(function(item) {
-							return item.label != serviceAgora.localVideoTrack._deviceName
-						})
-						var decideId = newCam ? newCam.deviceId : '';
+						let decideId = cams.find(item => item.label != serviceAgora.localVideoTrack._deviceName).deviceId;
 						// 切换摄像头
-						serviceAgora.localVideoTrack.setDevice(decideId).then(function() {
+						serviceAgora.localVideoTrack.setDevice(decideId).then(() => {
 							console.log("set device success");
-						}).catch(function(e) {
+						}).catch(e => {
 							console.log("set device error", e);
 						});
 					}, function(err) {

@@ -6,6 +6,7 @@ var profile = require("./profile");
 var textParser = require("./textParser");
 var moment = require("moment");
 var apiHelper = require("../pages/main/apis");
+var channel = require("../pages/main/channel");
 
 var LOADING = Modernizr.inlinesvg ? _const.loadingSvg : "<img src=\"//kefu.easemob.com__WEBIM_SLASH_KEY_PATH__/webim/static/img/loading.gif\" width=\"20\" style=\"margin-top:10px;\"/>";
 
@@ -57,6 +58,7 @@ function genMsgContent(msg, opt){
 			html = "<span class=\"text\">";
 			html += value;
 			html += "</span>";
+
 			break;
 		}
 		else if(laiye){
@@ -141,10 +143,15 @@ function genMsgContent(msg, opt){
 			else{
 				newValue = value;
 			}
-			html = "<span class=\"text\">";
-			html += newValue;
-			html += "</span>";
-			html += msg.list;
+      if(newValue) {
+        html = "<span class=\"text\">";
+        html += newValue;
+        html += "</span>";
+      }
+      // 非空才添加
+      if(!isEmptyMsgList(msg.list)) {
+        html += msg.list;
+      }
 			break;
 		}
 		else if(laiye){
@@ -351,7 +358,7 @@ function genMsgContent(msg, opt){
 			}
 			// 英文状态开关可能会有问题，这里用语言状态来判断
 			else{
-				ctrlArgs.label = __("config.language") === "en-US" ? "Chat with agent" : ctrlArgs.label;
+				ctrlArgs.label = __("config.language") === "zh-CN" ? ctrlArgs.label : "Chat with agent";
 				html += "<div class=\"em-btn-list\" style=\"max-width: 360px;margin: 0 auto;\">"
 					+ "<button "
 						+ "class=\"white bg-color border-color bg-hover-color-dark js_robotTransferBtn " + disabledClass + "\" "
@@ -381,7 +388,6 @@ function genMsgContent(msg, opt){
 	return html;
 }
 
-
 function _getAvatar(msg){
 	var officialAccountType = utils.getDataByPath(msg, "ext.weichat.official_account.type");
 	var avatarFromOfficialAccountExt = utils.getDataByPath(msg, "ext.weichat.official_account.img");
@@ -405,6 +411,10 @@ function _getAvatar(msg){
 function _getRulaiHtml(content){
 
 }
+
+function isEmptyMsgList(str) {
+  return str === '<div class="em-btn-list"></div>';
+} 
 
 function genDomFromMsg(msg, isReceived, isHistory, opt){
 	opt = opt || {};
@@ -514,8 +524,10 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 	if(profile.grayList.rulaiRobotRichText && isJsonString(data)){
 		data = JSON.parse(data);
 		data.forEach(function(item){
-			if(item.type == "richText"){
-				var newContent = "";
+      
+      if(item.type == "richText"){
+        var newContent = "";
+
 				if(item.content.indexOf("<img") > -1){
 					var reg = new RegExp("<img", "g");
 					newContent = item.content.replace(reg, "<img class='em-widget-imgview' ");
@@ -523,6 +535,12 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 				else{
 					newContent = item.content;
 				}
+
+        // 针对敦煌富文本消息，将其中的 id 改为 class ，方便做事件绑定
+        if(item.content.indexOf("dh_rich_text") > -1) {
+          var updatedText = newContent.replace(/id=('[^']*'|"[^"]*")/g, 'class=$1');
+          newContent = updatedText;
+        } 
 
 				msg.data = newContent;
 				msg.rulai = true;
@@ -603,7 +621,7 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 		}
 		// 英文状态开关可能会有问题，这里用语言状态来判断
 		else{
-			ctrlArgs.label = __("config.language") === "en-US" ? "Chat with agent" : ctrlArgs.label;
+			ctrlArgs.label = __("config.language") === "zh-CN" ? ctrlArgs.label : "Chat with agent";
 			html += "<div class=\"em-btn-list\" style=\"padding:0\">"
 				+ "<button "
 					+ "class=\"white fg-color border-color  js_robotTransferBtn  TransferBtnColor" + disabledClass + "\" "
@@ -625,6 +643,7 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 	// wrapper 结尾
 	html += "</div>";
 	dom.innerHTML = html;
+
 	return dom;
 }
 

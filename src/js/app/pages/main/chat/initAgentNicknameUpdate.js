@@ -27,10 +27,6 @@ module.exports = function(){
 function _updateAgentNickname(officialAccount){
 	$(".em-service-title").addClass("hide");
 	if(officialAccount !== profile.currentOfficialAccount) return;
-	var schedulerMap = {
-		'zh-CN': '调度员',
-		'en-US': 'Scheduler'
-	}
 
 	var agentNickname = officialAccount.agentNickname;
 	var agentAvatar = officialAccount.agentAvatar;
@@ -65,7 +61,7 @@ function _updateAgentNickname(officialAccount){
 		profile.isAgentNicknameEnable
 		&& agentNickname
 		&& isSessionOpen
-		&& agentNickname !== schedulerMap[__("config.language")]
+		&& agentNickname !== __("config.scheduler_role_nickname")
 	){
 		$agentNickname.innerText = agentNickname;
 	}
