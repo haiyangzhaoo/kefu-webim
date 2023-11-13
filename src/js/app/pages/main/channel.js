@@ -802,16 +802,16 @@ function _handleMessage(msg, options){
 		message.subtype = type;
 		message.list = "<div class=\"em-btn-list\">";
 		_.each(msg.ext.msgtype.choice.items, function(item, index){
-			var className = themeCustomColor ? "" : "fg-color";;
-			var color = themeCustomColor;
-			// if(profile.shouldMsgActivated(serviceSessionId)){
-			// 	className = themeCustomColor ? "" : "fg-color";
-			// 	color = themeCustomColor;
-			// }
-			// else{
-			// 	className = "disabled";
-			// 	color = "";
-			// }
+      var className = "";
+			var color = "";
+			if(profile.shouldMsgActivated(serviceSessionId)){
+				className = themeCustomColor ? "" : "fg-color";
+				color = themeCustomColor;
+			}
+			else{
+				className = "disabled";
+				color = "";
+			}
 
 
       var callback = item.callback || "";
@@ -1443,20 +1443,20 @@ function _getOfficialAccountById(id){
 function _appendMsg(msg, options){
 	// 灰度打开时，访客收到菜单消息后，如果访客又发送了新消息，则菜单置灰不可再点选
 	var msgType = utils.getDataByPath(msg, "ext.weichat.official_account.type");
-	// if(profile.grayList.rulaiRobotRichText && msgType !== "SYSTEM"){
-	// 	// 所有的 list 子类消息
-	// 	var allListBtn1 = document.querySelectorAll(".msgtype-robotList .em-btn-list button");
-	// 	var all = _.toArray(allListBtn1);
-	// 	_.each(all, function(robotBtn){
-	// 		utils.addClass(robotBtn, "disabled");
-	// 	});
-	// 	// 对应的箭头也置灰
-	// 	var allListBtn2 = document.querySelectorAll(".msgtype-robotList .em-btn-list i");
-	// 	var allI = _.toArray(allListBtn2);
-	// 	_.each(allI, function(i){
-	// 		utils.addClass(i, "disabled");
-	// 	});
-	// }
+	if(profile.grayList.rulaiRobotRichText && msgType !== "SYSTEM"){
+		// 所有的 list 子类消息
+		var allListBtn1 = document.querySelectorAll(".msgtype-robotList .em-btn-list button");
+		var all = _.toArray(allListBtn1);
+		_.each(all, function(robotBtn){
+			utils.addClass(robotBtn, "disabled");
+		});
+		// 对应的箭头也置灰
+		var allListBtn2 = document.querySelectorAll(".msgtype-robotList .em-btn-list i");
+		var allI = _.toArray(allListBtn2);
+		_.each(allI, function(i){
+			utils.addClass(i, "disabled");
+		});
+	}
 
 	var opt = options || {};
 	var isReceived = opt.isReceived;
