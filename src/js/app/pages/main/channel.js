@@ -802,7 +802,7 @@ function _handleMessage(msg, options){
 		message.subtype = type;
 		message.list = "<div class=\"em-btn-list\">";
 		_.each(msg.ext.msgtype.choice.items, function(item, index){
-			var className = "";
+      var className = "";
 			var color = "";
 			if(profile.shouldMsgActivated(serviceSessionId)){
 				className = themeCustomColor ? "" : "fg-color";
@@ -814,19 +814,21 @@ function _handleMessage(msg, options){
 			}
 
 
+      var callback = item.callback || "";
+      var node = item.node || "";
 			if(options.answerSource == "WELCOME"){
 				if(index < 5){
 					message.list += "<li  data-index=" + index + "><button "
 							+ "class=\"js_robotbtn " + className + "\" "
 							+ "style=\"color: " + color + " \""
-							+ "data-id=\"" + item.id + "\" "
+							+ "data-callback=\"" + callback + "\" " + "data-node=\"" + node + "\" " + "data-id=\"" + item.id + "\" "
 							+ ">" + item.name + "</button> <i class='icon-arrow-right'></i> </li>";
 				}
 				else{
 					message.list += "<li class='hide'  data-index=" + index + "><button "
 							+ "class=\"js_robotbtn " + className + "\" "
 							+ "style=\"color: " + color + " \""
-							+ "data-id=\"" + item.id + "\" "
+							+ "data-callback=\"" + callback + "\" " + "data-node=\"" + node + "\" " + "data-id=\"" + item.id + "\" "
 							+ ">" + item.name + "</button> <i class='icon-arrow-right'></i> </li>";
 				}
 			}
@@ -834,7 +836,7 @@ function _handleMessage(msg, options){
 				message.list += "<li  data-index=" + index + "><button "
 						+ "class=\"js_robotbtn " + className + "\" "
 						+ "style=\"color: " + color + " \""
-						+ "data-id=\"" + item.id + "\" "
+						+ "data-callback=\"" + callback + "\" " + "data-node=\"" + node + "\" " + "data-id=\"" + item.id + "\" "
 						+ ">" + item.name + "</button> <i class='icon-arrow-right'></i> </li>";
 			}
 

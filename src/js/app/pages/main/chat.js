@@ -713,13 +713,21 @@ function _bindEvents(){
 	// 机器人列表
 	utils.live("button.js_robotbtn", "click", function(e){
 		if(!utils.hasClass(e.target, "disabled")){
-			channel.sendText(this.innerText, {
+      // 这里为敦煌定制(格式很坑)
+      var dhCallback = e.target.dataset.callback
+      var dhNode = e.target.dataset.node
+      var text = dhCallback ? dhCallback : this.innerText
+      
+			channel.sendText(text, {
 				ext: {
 					msgtype: {
 						choice: {
 							menuid: this.getAttribute("data-id")
 						}
-					}
+					},
+          robot: {
+            node: dhNode
+          }
 				}
 			});
 		}
