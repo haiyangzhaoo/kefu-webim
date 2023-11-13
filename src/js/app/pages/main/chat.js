@@ -8,6 +8,7 @@ var eventListener = require("@/app/tools/eventListener");
 var channel = require("./channel");
 var profile = require("@/app/tools/profile");
 var satisfaction = require("./satisfaction");
+var customUrl = require("./customUrl");
 var imgView = require("./imgview");
 var NoteIframe = require("./noteIframe");
 var initPasteImage = require("./paste");
@@ -15,6 +16,7 @@ var videoChat = require("./videoChat");
 // var videoChatAgora = require("./videoChatAgora");
 var videoChatAgora = require("./agoraVideo/videoChatAgora");
 var guessInfo = require("./guess/guessInfo");
+var Swiper = require('swiper');
 
 var TagSelector = require("./chat/tagSelector");
 var initAgentInputStatePoller = require("./chat/initAgentInputStatePoller");
@@ -226,11 +228,30 @@ function _initSoundReminder(){
 
 function _setLogo(){
 	if(!config.logo.enabled) return;
-	var logoImgWapper = document.querySelector(".em-widget-tenant-logo");
-	var logoImg = logoImgWapper.querySelector("img");
+	if (config.logo.content && Array.isArray(config.logo.content) && config.logo.content.length) {
+		var logoImgWapper = document.querySelector(".em-widget-tenant-logo");
+		var swiperSlideObj = document.createDocumentFragment();
+		config.logo.content.map(function(item) {
+			var swiperSlide = $('<div class="swiper-slide"><a href="'+ (item.url || 'javascript:void(0)') +'" target="'+ (item.url && '_blank') +'"><img src="'+ item.thumail +'" /></a></div>');
+			swiperSlideObj.appendChild(swiperSlide[0]);
+		});
+		logoImgWapper.getElementsByClassName('swiper-wrapper')[0].appendChild(swiperSlideObj);
+		var swiperH5 = new Swiper('.em-widget-tenant-logo .mySwiper',{
+			pagination: {
+				el: '.em-widget-tenant-logo .swiper-pagination',
+				clickable:true,
+			},//这样写小圆点就有了
+			resistanceRatio : 0,
+			observer: true,//修改swiper自己或子元素时，自动初始化swiper
+			observeParents: true,//修改swiper的父元素时，自动初始化swiper
+			autoplay: {
+				delay: 3000,
+				disableOnInteraction: false,
+			},
+		});
 
-	utils.removeClass(logoImgWapper, "hide");
-	logoImg.src = config.logo.url;
+		utils.removeClass(logoImgWapper, "hide");
+	}
 }
 
 function _setNotice(){
@@ -1814,6 +1835,7 @@ function _initSession(){
 
 			_initSystemEventListener();
 			satisfaction.init();
+			customUrl.init();
 			initAgentInputStatePoller();
 			initAgentStatusPoller();
 			initVisitorStatusPoller();

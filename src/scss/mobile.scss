@@ -734,6 +734,12 @@
 			font-size: 1rem;
 			overflow-y:auto;
 		}
+		&.session-closed-dialog{
+			.wrapper {
+				width: 100%;
+			}
+		}
+
 	}
 	.em-widget-error-prompt {
 		font-size: 1rem;
