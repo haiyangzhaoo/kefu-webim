@@ -1,6 +1,7 @@
 const OpenCC = require('opencc-js');
 const i18next = require("i18next");
 const i18nextHttpBackend = require("i18next-http-backend");
+const _zh_cn_map_ = require("../../i18n/zh-CN");
 
 const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
 
@@ -56,14 +57,35 @@ i18next.use(i18nextHttpBackend).init({
 	},
 }, function(err, t) {
 	console.log('1111111note', initLang, err)
-	window.i18nWebim = i18next;
-	if (lang == 'zh-HK') {
-		window.__ = function() {
-			return converter(t.apply(null, arguments));
+	if(err){
+		// 有错误默认中文
+		i18next.init({
+			lng: "zh-CN",
+			fallbackLng: false,
+			keySeparator: ".",
+			nsSeparator: false,
+			saveMissing: true,
+			resources: {
+				"zh-CN": {
+					translation: _zh_cn_map_,
+				},
+			},
+		},cb);
+	
+		function cb(err, tt){
+			window.__ = tt;
 		}
-	} else {
-		window.__ = t;
+	}else{
+		window.i18nWebim = i18next;
+		if (lang == 'zh-HK') {
+			window.__ = function() {
+				return converter(t.apply(null, arguments));
+			}
+		} else {
+			window.__ = t;
+		}
 	}
+	
 
 require("underscore");
 require("es6-promise").polyfill();

@@ -8,6 +8,7 @@ var utils = require("@/common/utils");
 const OpenCC = require('opencc-js');
 const i18next = require("i18next");
 const i18nextHttpBackend = require("i18next-http-backend");
+const _zh_cn_map_ = require("../i18n/zh-CN");
 
 const converter = OpenCC.Converter({ from: 'cn', to: 'hk' });
 let search = window.location ? window.location.search : '';
@@ -47,11 +48,11 @@ if (!utils.isTop) { // js
 				lng: initLang,
 				fallbackLng: false,
 				keySeparator: ".",
-				nsSeparator: false,
+				nsSeparator: false, 
 				saveMissing: true,
 				// ns: ['translation'],
 				// defaultNS: 'translation',
-				// languages: ['zhCN', 'enUS'],
+				// languages: ['zhCN', 'enUS'], 
 				backend: {
 					loadPath: `/v1/webimplugin/settings/config/${configId}/language/content?language=${initLang}`,
 					addPath: null,
@@ -61,7 +62,7 @@ if (!utils.isTop) { // js
 						initLang && Object.keys(data).length && (data.config.language = lang);
 			
 						return data;
-					}
+					},
 				},
 			}, callback);
 		}
@@ -83,7 +84,7 @@ if (!utils.isTop) { // js
 		// defaultNS: 'translation',
 		// languages: ['zhCN', 'enUS'],
 		backend: {
-			loadPath: `/v1/webimplugin/settings/config/${searchParams.configId}/language/content?language=${initLang}`,
+			loadPath: `/v1/webimplugin/settings/config/${searchParams.configId}/language/conten?language=${initLang}`,
 			addPath: null,
 			parse: ret => {
 				 ret = JSON.parse(ret);
@@ -91,21 +92,44 @@ if (!utils.isTop) { // js
 				initLang && Object.keys(data).length && (data.config.language = lang);
 	
 				return data;
-			}
+			},
 		},
 	}, callback);
 }
 
+
 function callback(err, t) {
 	console.log('1111111html', initLang, lang, err)
-	window.i18nWebim = i18next;
-	if (lang == 'zh-HK') {
-		window.__ = function() {
-			return converter(t.apply(null, arguments));
+	
+	if(err){
+		// 有错误默认中文
+		i18next.init({
+			lng: "zh-CN",
+			fallbackLng: false,
+			keySeparator: ".",
+			nsSeparator: false,
+			saveMissing: true,
+			resources: {
+				"zh-CN": {
+					translation: _zh_cn_map_,
+				},
+			},
+		},cb);
+	
+		function cb(err, tt){
+			window.__ = tt;
 		}
-	} else {
-		window.__ = t;
+	}else{
+		window.i18nWebim = i18next;
+		if (lang == 'zh-HK') {
+			window.__ = function() {
+				return converter(t.apply(null, arguments));
+			}
+		} else {
+			window.__ = t;
+		}
 	}
+	
 
 require("es6-promise").polyfill();
 require("@/common/polyfill");
