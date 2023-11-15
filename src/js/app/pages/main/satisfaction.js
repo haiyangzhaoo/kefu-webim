@@ -185,14 +185,20 @@ function _init(){
 		utils.live(".cancel","click",function(){
 			// dialog && dialog.hide();
 			dialog && dialog.el.remove();
+			// 关闭满意度，弹出url配置弹窗。
+			eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
 		});
 		utils.live(".icon-back-new","click",function(){
 			// dialog && dialog.hide();
 			dialog && dialog.el.remove();
+			// 关闭满意度，弹出url配置弹窗。
+			eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
 		});
 		utils.live(".wrapper-title .icon-close","click",function(){
 			// dialog && dialog.hide();
 			dialog && dialog.el.remove();
+			// 关闭满意度，弹出url配置弹窗。
+			eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
 		});
 
 		if(utils.isMobile || ($("body").hasClass("window-demo") && $("#em-kefu-webim-self").hasClass("hide"))){
@@ -414,6 +420,8 @@ function _confirm(){
 			_clear();
 			// dialog && dialog.hide();
 			dialog && dialog.el.remove();
+			// 关闭满意度，弹出url配置弹窗。
+			eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
 		}
 		else{	
 			if(resp.errorCode == "WEBIM_338"){
@@ -423,6 +431,8 @@ function _confirm(){
 			}
 			// dialog && dialog.hide();
 			dialog && dialog.el.remove();
+			// 关闭满意度，弹出url配置弹窗。
+			eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
 		}
 	});
 

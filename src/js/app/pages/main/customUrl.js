@@ -4,9 +4,10 @@ var uikit = require("./uikit");
 var apiHelper = require("./apis");
 var profile = require("@/app/tools/profile");
 var eventListener = require("@/app/tools/eventListener");
-
+var commonConfig = require("@/common/config");
 var dom;
 var dialog;
+var dialogShow = false;
 
 module.exports = {
 	init: init,
@@ -19,7 +20,7 @@ function _init(){
 			apiHelper.getSessionClosedDialogUrl().then(function(res){
 				dom = utils.createElementFromHTML([
 					"<div class=\"wrapper\">",
-					"<div class=\"wrapper-title custom-url-title\"><i class=\"icon-close\"></i></div>",
+					"<div class=\"custom-url-title\"><i class=\"icon-close\"></i></div>",
 					"<iframe  src=\""+ res.data.entities[0].optionValue +"\" frameborder=\"0\"></iframe>",
 					"</div>"
 				].join(""))
@@ -28,6 +29,7 @@ function _init(){
 	utils.live(".custom-url-title .icon-close","click",function(){
 		// dialog && dialog.hide();
 		dialog && dialog.el.remove();
+		dialogShow = false;
 	});
 
 	if(utils.isMobile){
@@ -61,16 +63,37 @@ function _init(){
 })
 }
 
-function show(inviteId, serviceSessionId, evaluateWay){
-	_init();
+function show(){
+	if(!dialogShow){//_init只执行一次，避免出现发送多次结束会话消息的情况。
+		_init();
+		dialogShow = true;
+	}
+	// _init = function(){};
 }
 
 function init(){
 	eventListener.add(
 		_const.SYSTEM_EVENT.SESSION_CLOSED,
-		function(officialAccount, inviteId, serviceSessionId){
-			if(officialAccount !== profile.currentOfficialAccount) return;
-			show(inviteId, serviceSessionId, "system");
+		function(){
+			// 满意度评价邀请为主动弹出邀请的情况时，先弹满意度。
+			config = commonConfig.getConfig();
+			if(config.ui.enquiryShowMode === "popup"){
+				eventListener.add(
+					_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,
+					function(){
+						show();
+					}
+				);
+			}
+			else{
+				show();
+			}
+		}
+	);
+	eventListener.add(
+		_const.SYSTEM_EVENT.SESSION_ABORTED,
+		function(){
+			show();
 		}
 	);
 }

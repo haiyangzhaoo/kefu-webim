@@ -36,8 +36,11 @@ module.exports = {
 		SESSION_CREATED: "ServiceSessionCreatedEvent",
 		SESSION_OPENED: "ServiceSessionOpenedEvent",
 		SESSION_CLOSED: "ServiceSessionClosedEvent",
+		SESSION_ABORTED: "ServiceSessionAbortedEvent",
 		SESSION_TRANSFERED: "ServiceSessionTransferedEvent",
 		SESSION_TRANSFERING: "ServiceSessionTransferedToAgentQueueEvent",
+
+		CUSTOMURL_DIALOG_SHOW: "customUrl.dialog.show",
 
 		SESSION_RESTORED: "session.restored",
 		SESSION_NOT_CREATED: "session.not.created",
