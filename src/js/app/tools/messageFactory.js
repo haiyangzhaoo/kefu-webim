@@ -536,6 +536,9 @@ function genDomFromMsg(msg, isReceived, isHistory, opt){
 					newContent = item.content;
 				}
 
+        // 针对文本中带有 [:$] 表情字符的，转化为表情
+        newContent = newContent.replace(/\[:\$\]/g, '<img class="emoji" src="static/img/faces/ee_9.png" alt="[:$]">');
+
         // 针对敦煌富文本消息，将其中的 id 改为 class ，方便做事件绑定
         if(item.content.indexOf("dh_rich_text") > -1) {
           var updatedText = newContent.replace(/id=('[^']*'|"[^"]*")/g, 'class=$1');
