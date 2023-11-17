@@ -108,6 +108,12 @@
 	}
 }
 
+.hide-list-icon{
+  i.icon-arrow-right{
+    display: none !important;
+  }
+}
+
 .contact-customer-service{
 	// width: 80%;
 	margin: 0 10% 1em;
