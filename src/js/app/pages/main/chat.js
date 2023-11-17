@@ -725,7 +725,7 @@ function _bindEvents(){
 							menuid: this.getAttribute("data-id")
 						}
 					},
-          robot: {
+          dhRobot: {
             node: dhNode
           }
 				}
