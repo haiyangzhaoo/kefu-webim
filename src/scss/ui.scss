@@ -389,13 +389,17 @@
 				    width: 135px;
 				    height: 40px;
 				    line-height: 40px;
-				    font-size: 15px;
+				    font-size: 14px;
 				    border-radius: 5px;
 					// border:1px solid #ccc;
 					cursor:pointer;
 					background-color: #F7F7F7;
 					border-radius: 24px;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
 					i{color:#666}
+					
 				}
 				.selected{
 					background: #1ba8ed;
