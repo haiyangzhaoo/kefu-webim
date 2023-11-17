@@ -38,6 +38,7 @@ var commonIssueEnable;
 var selfServiceEnable;
 var iframeEnable;
 var initIframeStateDate;
+var isChannelTag = false; //true表示关联设置
 var domData = {
 	contact_agent: __("common.contact_agent"),
 	close: __("common.close"),
@@ -571,6 +572,8 @@ function handleCfgData(relevanceList, status) {
 			};
 		}
 		console.log("mismatched channel, use default.");
+	}else{
+		isChannelTag = true
 	}
 	var params = parseUrlSearch(window.location.href);
 	var initlanguage = __("config.language") === "zh-CN" ? "zh" : "en";
@@ -608,6 +611,7 @@ function handleCfgData(relevanceList, status) {
 			closeSessionWhenCloseWindow: "false" // 是否在关闭聊窗的时候关闭会话，默认不会传该值，默认值为"false"
 		},
 		originType: params.originType || "",
+		isChannelTag:isChannelTag
 	});
 
 	// fake patch: 老版本配置的字符串需要decode

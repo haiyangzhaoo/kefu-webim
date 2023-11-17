@@ -424,7 +424,7 @@ function getTransferManualMenu(){
 		api("getTransferManualMenu", {
 			tenantId: config.tenantId,
 			channelId: config.channelId,
-			channelType: "easemob"
+			channelType: "easemob" 
 		}, function(msg){
 			var entity = utils.getDataByPath(msg, "data.entity");
 			if(entity){
@@ -886,7 +886,10 @@ function getEvaluationDegrees(){
 					appName: config.appName,
 					userName: config.user.username,
 					serviceSessionId: officialAccount.sessionId,
-					token: token
+					token: token,
+					isChannelTag:config.isChannelTag,
+					channelType:"easemob",
+					channelId:config.channelId
 				}, function(msg){
 					var entities = utils.getDataByPath(msg, "data.entities");
 					if(_.isArray(entities)){
@@ -1018,6 +1021,29 @@ function getServiceSessionResolved(){
 				}
 			}
 			resolve(webim);
+		}, function(err){
+			reject(err);
+		});
+	});
+}
+
+function getResolutionparams(){
+	return new Promise(function(resolve, reject){
+		api("getResolutionparams", { 
+			tenantId: config.tenantId,
+			orgName: config.orgName,
+			appName: config.appName,
+			userName: config.user.username,
+			token: config.user.token,
+			channelType:"easemob",
+			channelId:config.channelId
+		 }, function(res){
+			var entities = utils.getDataByPath(res, "data.entities");
+			if(_.isArray(entities)){
+				resolve(entities);
+			}else{
+				reject(new Error("unexpected emoji package list."));
+			}
 		}, function(err){
 			reject(err);
 		});
@@ -1747,7 +1773,7 @@ module.exports = {
 	getArticleHtml: getArticleHtml,
 	getEvaluteSolveWord: getEvaluteSolveWord,
 	getServiceSessionResolved: getServiceSessionResolved,
-
+	getResolutionparams: getResolutionparams,
 	startKeep: startKeep,
 	closeChatDialog: closeChatDialog,
 	visitorCloseSession: visitorCloseSession,

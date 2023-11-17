@@ -35,6 +35,8 @@ var defaultEvaluationDegreeId;
 var color;
 var bgColor;
 var tipNameArr;
+var resolveTxt = __("evaluation.resolved")
+var unresolvedTxt = __("evaluation.unsolved")
 
 module.exports = {
 	init: init,
@@ -62,42 +64,25 @@ function _init(){
 	.then(function(resp){
 		fiveStarState = resp;
 	});
-	apiHelper.getSatisfactionTipWord().then(function(tipWord){
-		dom = sessionResolved ? utils.createElementFromHTML([
-			"<div class=\"wrapper\">",
-			"<div class=\"wrapper-title\">" + __("evaluation.title") + "<i class=\"icon-close\"></i></div>",
-			"<div class=\"resolveCon\"><span class=\"title\">" + resolveTip + "</span>",
-			"<div><span class=\"resolve-btn selected bg-color resolved\" data-num = \"1\"><i class=\"icon-resolved\"></i><span>" + __("evaluation.resolved") + "</span></span>",
-			"<span class=\"resolve-btn unresolved\" data-num = \"2\"><i class=\"icon-unresolved\"></i><span>" + __("evaluation.unsolved") + "</span></span></div></div>",
-			"<span class=\"title\">" + tipWord + "</span>",
-			"<ul></ul>",
-			"<div class=\"tip hide\"></div>",
-			"<div class=\"tag-container\"></div>",
-			"<textarea spellcheck=\"false\" placeholder=\"" + __("evaluation.review") + "\"></textarea>",
-			"<div class=\"cancel hidden\">" + __("evaluation.no_evaluation") + "</div>",
-			"<div class=\"confirm bg-color\">"+  __("evaluation.submit_evaluation")  +"</div>",
-			"</div>"
-		].join(""))
-			:
-			utils.createElementFromHTML([
+	apiHelper.getResolutionparams().then(function(resp){
+		resp.map((item)=>{
+			if(item.score == 1){
+				resolveTxt = item.name
+			}else if(item.score == 2){
+				unresolvedTxt = item.name
+			}else{
+				resolveTxt = __("evaluation.resolved")
+				unresolvedTxt = __("evaluation.unsolved")
+			}
+		})
+
+		apiHelper.getSatisfactionTipWord().then(function(tipWord){
+			dom = sessionResolved ? utils.createElementFromHTML([
 				"<div class=\"wrapper\">",
 				"<div class=\"wrapper-title\">" + __("evaluation.title") + "<i class=\"icon-close\"></i></div>",
-				"<span class=\"title\">" + tipWord + "</span>",
-				"<ul></ul>",
-				"<div class=\"tip hide\"></div>",
-				"<div class=\"tag-container\"></div>",
-				"<textarea spellcheck=\"false\" placeholder=\"" + __("evaluation.review") + "\"></textarea>",
-				"<div class=\"cancel hidden\">" + __("evaluation.no_evaluation") + "</div>",
-				"<div class=\"confirm bg-color\">"+  __("evaluation.submit_evaluation")  +"</div>",
-				"</div>"
-			].join(""));
-		if(utils.isMobile || ($("body").hasClass("window-demo") && $("#em-kefu-webim-self").hasClass("hide"))){
-			dom = sessionResolved ? utils.createElementFromHTML([
-				"<div id=\"satisfaction-mobile\" class=\"wrapper\">",
-				"<div class=\"wrapper-title bg-color\">" + __("evaluation.title") + " <i class=\"icon-back-new\"></i></div>",
 				"<div class=\"resolveCon\"><span class=\"title\">" + resolveTip + "</span>",
-				"<div><span class=\"resolve-btn selected bg-color resolved\" data-num = \"1\"><i class=\"icon-resolved\"></i><span>" + __("evaluation.resolved") + "</span></span>",
-				"<span class=\"resolve-btn unresolved\" data-num = \"2\"><i class=\"icon-unresolved\"></i><span>" + __("evaluation.unsolved") + "</span></span></div></div>",
+				"<div><span class=\"resolve-btn selected bg-color resolved\" data-num = \"1\"><i class=\"icon-resolved\"></i><span>" + resolveTxt + "</span></span>",
+				"<span class=\"resolve-btn unresolved\" data-num = \"2\"><i class=\"icon-unresolved\"></i><span>" + unresolvedTxt + "</span></span></div></div>",
 				"<span class=\"title\">" + tipWord + "</span>",
 				"<ul></ul>",
 				"<div class=\"tip hide\"></div>",
@@ -109,8 +94,8 @@ function _init(){
 			].join(""))
 				:
 				utils.createElementFromHTML([
-					"<div id=\"satisfaction-mobile\" class=\"wrapper\">",
-					"<div class=\"wrapper-title bg-color\">" + __("evaluation.title") + " <i class=\"icon-back-new\"></i></div>",
+					"<div class=\"wrapper\">",
+					"<div class=\"wrapper-title\">" + __("evaluation.title") + "<i class=\"icon-close\"></i></div>",
 					"<span class=\"title\">" + tipWord + "</span>",
 					"<ul></ul>",
 					"<div class=\"tip hide\"></div>",
@@ -120,141 +105,171 @@ function _init(){
 					"<div class=\"confirm bg-color\">"+  __("evaluation.submit_evaluation")  +"</div>",
 					"</div>"
 				].join(""));
-		}
-		starsUl = dom.querySelector("ul");
-		commentDom = dom.querySelector("textarea");
-		tagContainer = dom.querySelector(".tag-container");
-		resolvedBtn = dom.querySelectorAll(".resolve-btn");
-		resolvedDom = dom.querySelector(".resolved");
+			if(utils.isMobile || ($("body").hasClass("window-demo") && $("#em-kefu-webim-self").hasClass("hide"))){
+				dom = sessionResolved ? utils.createElementFromHTML([
+					"<div id=\"satisfaction-mobile\" class=\"wrapper\">",
+					"<div class=\"wrapper-title bg-color\">" + __("evaluation.title") + " <i class=\"icon-back-new\"></i></div>",
+					"<div class=\"resolveCon\"><span class=\"title\">" + resolveTip + "</span>",
+					"<div><span class=\"resolve-btn selected bg-color resolved\" data-num = \"1\"><i class=\"icon-resolved\"></i><span>" + resolveTxt + "</span></span>",
+					"<span class=\"resolve-btn unresolved\" data-num = \"2\"><i class=\"icon-unresolved\"></i><span>" + unresolvedTxt + "</span></span></div></div>",
+					"<span class=\"title\">" + tipWord + "</span>",
+					"<ul></ul>",
+					"<div class=\"tip hide\"></div>",
+					"<div class=\"tag-container\"></div>",
+					"<textarea spellcheck=\"false\" placeholder=\"" + __("evaluation.review") + "\"></textarea>",
+					"<div class=\"cancel hidden\">" + __("evaluation.no_evaluation") + "</div>",
+					"<div class=\"confirm bg-color\">"+  __("evaluation.submit_evaluation")  +"</div>",
+					"</div>"
+				].join(""))
+					:
+					utils.createElementFromHTML([
+						"<div id=\"satisfaction-mobile\" class=\"wrapper\">",
+						"<div class=\"wrapper-title bg-color\">" + __("evaluation.title") + " <i class=\"icon-back-new\"></i></div>",
+						"<span class=\"title\">" + tipWord + "</span>",
+						"<ul></ul>",
+						"<div class=\"tip hide\"></div>",
+						"<div class=\"tag-container\"></div>",
+						"<textarea spellcheck=\"false\" placeholder=\"" + __("evaluation.review") + "\"></textarea>",
+						"<div class=\"cancel hidden\">" + __("evaluation.no_evaluation") + "</div>",
+						"<div class=\"confirm bg-color\">"+  __("evaluation.submit_evaluation")  +"</div>",
+						"</div>"
+					].join(""));
+			}
+			starsUl = dom.querySelector("ul");
+			commentDom = dom.querySelector("textarea");
+			tagContainer = dom.querySelector(".tag-container");
+			resolvedBtn = dom.querySelectorAll(".resolve-btn");
+			resolvedDom = dom.querySelector(".resolved");
 
-		utils.live(".resolve-btn", "click", function(){
-			utils.removeClass(resolvedBtn, "selected bg-color");
-			$(".resolve-btn").css("cssText","background-color:#f7f7f7 !important");
-			$(".resolve-btn i").css("cssText","color:##595959 !important"); 
-			$(".resolve-btn span").css("cssText","color:##595959 !important");  
-			utils.addClass(this, "selected bg-color");
+			utils.live(".resolve-btn", "click", function(){
+				utils.removeClass(resolvedBtn, "selected bg-color");
+				$(".resolve-btn").css("cssText","background-color:#f7f7f7 !important");
+				$(".resolve-btn i").css("cssText","color:##595959 !important"); 
+				$(".resolve-btn span").css("cssText","color:##595959 !important");  
+				utils.addClass(this, "selected bg-color");
+				if(color){
+					$(".resolveCon .selected").css("cssText","background-color:"+  color +"!important"); 
+					$(".resolveCon .selected i").css("cssText","color:"+  bgColor +"!important"); 
+					$(".resolveCon .selected span").css("cssText","color:"+  bgColor +"!important"); 
+				}
+				resolvedId = this.dataset.num;
+				if(fiveStarState){
+					if(resolvedId == 1){
+						utils.addClass(starList, "sel");
+						score = defaultScore;
+						evaluationDegreeId = defaultEvaluationDegreeId;
+					}
+					else{
+						utils.removeClass(starList, "sel");
+						score = false;
+					}
+				}
+			});
+
+			utils.live("li", "click", function(){
+				var level = +this.getAttribute("data-level");
+
+				evaluationDegreeId = this.getAttribute("data-evaluate-id");
+				score = this.getAttribute("data-score");
+				isSingleTag = this.getAttribute("data-isSingleTag");
+				level && _.each(starList, function(elem, i){
+					utils.toggleClass(elem, "sel", i < level);
+				});
+				var tipBox = $(".satisfaction .tip")
+				// var tipText = [__("evaluation.level1"),__("evaluation.level2"),__("evaluation.level3"),__("evaluation.level4"),__("evaluation.level5")]
+				var tipText = tipNameArr || [];
+				tipBox.removeClass("hide");
+				tipBox.text(tipText[level - 1]);
+
+				evaluationDegreeId && _createLabel(evaluationDegreeId);
+			}, starsUl);
+
+			utils.live("span.tag", "click", function(){
+				var selectedTagNodeList = tagContainer.querySelectorAll(".selected");
+				if(isSingleTag == "true"){
+					utils.removeClass(selectedTagNodeList, "selected");
+					utils.toggleClass(this, "selected");
+				}
+				else{
+					utils.toggleClass(this, "selected");
+				}
+
+			}, tagContainer);
+			utils.live(".confirm","click",_confirm);
+			utils.live(".cancel","click",function(){
+				// dialog && dialog.hide();
+				dialog && dialog.el.remove();
+				// 关闭满意度，弹出url配置弹窗。
+				eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
+			});
+			utils.live(".icon-back-new","click",function(){
+				// dialog && dialog.hide();
+				dialog && dialog.el.remove();
+				// 关闭满意度，弹出url配置弹窗。
+				eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
+			});
+			utils.live(".wrapper-title .icon-close","click",function(){
+				// dialog && dialog.hide();
+				dialog && dialog.el.remove();
+				// 关闭满意度，弹出url配置弹窗。
+				eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
+			});
+
+			if(utils.isMobile || ($("body").hasClass("window-demo") && $("#em-kefu-webim-self").hasClass("hide"))){
+				dialog = uikit.createDialog({
+					isFullSreen: true,
+					contentDom: dom,
+					className: "satisfaction"
+				});
+			}
+			else{
+				dialog = uikit.createDialog({
+					isFullSreen: false,
+					contentDom: dom,
+					className: "satisfaction"
+				});
+			}
+			// dialog = uikit.createDialog({
+			// 	contentDom: dom,
+			// 	className: "satisfaction"
+			// }).addButton({
+			// 	confirmText: __("common.submit"),
+			// 	confirm: _confirm,
+			// });
+			loading.hide("satisfaction");
+			dialog.show();
+
+			if(!$(document.querySelector(".em-self-wrapper")).hasClass("hide")){
+				dialog.el.style.cssText='left:10px;top:10px;';
+				if(!utils.isMobile && $("body").hasClass("window-demo")){
+					dom.querySelector(".icon-close").style.cssText='margin-right:20px;';
+				}
+			}
+			else{
+				dialog.el.style.cssText='left:0;top:0;';
+			}
+			// 火狐浏览器 _setSatisfaction时找不到starsUl，所以必须先执行完init
+			_setSatisfaction();
+
+			// 自定义主题色
+			// color && $(".theme_custom").find(".bg-color").css("cssText","background-color: " + color + " !important");
+			bgColor && $(".theme_custom").find(".bg-color").css("cssText","background-color: " + bgColor + " !important");
+			if($("body").hasClass("window-demo")){
+				// $(".wrapper > .cancel").addClass("hidden");
+			}
+			else{
+				// $(".wrapper > .cancel").removeClass("hidden");
+				if(!utils.isMobile){
+					$(".satisfaction >.wrapper").addClass("wrapperTpo");
+				}
+			}
 			if(color){
 				$(".resolveCon .selected").css("cssText","background-color:"+  color +"!important"); 
 				$(".resolveCon .selected i").css("cssText","color:"+  bgColor +"!important"); 
 				$(".resolveCon .selected span").css("cssText","color:"+  bgColor +"!important"); 
 			}
-			resolvedId = this.dataset.num;
-			if(fiveStarState){
-				if(resolvedId == 1){
-					utils.addClass(starList, "sel");
-					score = defaultScore;
-					evaluationDegreeId = defaultEvaluationDegreeId;
-				}
-				else{
-					utils.removeClass(starList, "sel");
-					score = false;
-				}
-			}
 		});
-
-		utils.live("li", "click", function(){
-			var level = +this.getAttribute("data-level");
-
-			evaluationDegreeId = this.getAttribute("data-evaluate-id");
-			score = this.getAttribute("data-score");
-			isSingleTag = this.getAttribute("data-isSingleTag");
-			level && _.each(starList, function(elem, i){
-				utils.toggleClass(elem, "sel", i < level);
-			});
-			var tipBox = $(".satisfaction .tip")
-			// var tipText = [__("evaluation.level1"),__("evaluation.level2"),__("evaluation.level3"),__("evaluation.level4"),__("evaluation.level5")]
-			var tipText = tipNameArr || [];
-			tipBox.removeClass("hide");
-			tipBox.text(tipText[level - 1]);
-
-			evaluationDegreeId && _createLabel(evaluationDegreeId);
-		}, starsUl);
-
-		utils.live("span.tag", "click", function(){
-			var selectedTagNodeList = tagContainer.querySelectorAll(".selected");
-			if(isSingleTag == "true"){
-				utils.removeClass(selectedTagNodeList, "selected");
-				utils.toggleClass(this, "selected");
-			}
-			else{
-				utils.toggleClass(this, "selected");
-			}
-
-		}, tagContainer);
-		utils.live(".confirm","click",_confirm);
-		utils.live(".cancel","click",function(){
-			// dialog && dialog.hide();
-			dialog && dialog.el.remove();
-			// 关闭满意度，弹出url配置弹窗。
-			eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
-		});
-		utils.live(".icon-back-new","click",function(){
-			// dialog && dialog.hide();
-			dialog && dialog.el.remove();
-			// 关闭满意度，弹出url配置弹窗。
-			eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
-		});
-		utils.live(".wrapper-title .icon-close","click",function(){
-			// dialog && dialog.hide();
-			dialog && dialog.el.remove();
-			// 关闭满意度，弹出url配置弹窗。
-			eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
-		});
-
-		if(utils.isMobile || ($("body").hasClass("window-demo") && $("#em-kefu-webim-self").hasClass("hide"))){
-			dialog = uikit.createDialog({
-				isFullSreen: true,
-				contentDom: dom,
-				className: "satisfaction"
-			});
-		}
-		else{
-			dialog = uikit.createDialog({
-				isFullSreen: false,
-				contentDom: dom,
-				className: "satisfaction"
-			});
-		}
-		// dialog = uikit.createDialog({
-		// 	contentDom: dom,
-		// 	className: "satisfaction"
-		// }).addButton({
-		// 	confirmText: __("common.submit"),
-		// 	confirm: _confirm,
-		// });
-		loading.hide("satisfaction");
-		dialog.show();
-
-		if(!$(document.querySelector(".em-self-wrapper")).hasClass("hide")){
-			dialog.el.style.cssText='left:10px;top:10px;';
-			if(!utils.isMobile && $("body").hasClass("window-demo")){
-				dom.querySelector(".icon-close").style.cssText='margin-right:20px;';
-			}
-		}
-		else{
-			dialog.el.style.cssText='left:0;top:0;';
-		}
-		// 火狐浏览器 _setSatisfaction时找不到starsUl，所以必须先执行完init
-		_setSatisfaction();
-
-		// 自定义主题色
-		// color && $(".theme_custom").find(".bg-color").css("cssText","background-color: " + color + " !important");
-		bgColor && $(".theme_custom").find(".bg-color").css("cssText","background-color: " + bgColor + " !important");
-		if($("body").hasClass("window-demo")){
-			// $(".wrapper > .cancel").addClass("hidden");
-		}
-		else{
-			// $(".wrapper > .cancel").removeClass("hidden");
-			if(!utils.isMobile){
-				$(".satisfaction >.wrapper").addClass("wrapperTpo");
-			}
-		}
-		if(color){
-			$(".resolveCon .selected").css("cssText","background-color:"+  color +"!important"); 
-			$(".resolveCon .selected i").css("cssText","color:"+  bgColor +"!important"); 
-			$(".resolveCon .selected span").css("cssText","color:"+  bgColor +"!important"); 
-		}
-	});
+	})
 }
 
 function _clear(){
@@ -378,7 +393,7 @@ function _confirm(){
 	});
 	var resolutionParam = [{
 		id: resolvedId,
-		name: resolvedId == 1 ? "已解决" : "未解决",
+		name: resolvedId == 1 ? resolveTxt : unresolvedTxt,
 		score: resolvedId,
 		resolutionParamTags: []
 	}];

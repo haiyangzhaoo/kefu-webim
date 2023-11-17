@@ -721,7 +721,7 @@ up2Im.listen(function(msg){
 			excludeData: true
 		});
 		break;
-	case "getEvaluationDegrees":
+	case "getEvaluationDegrees": 
 		emitAjax({
 			url: "__WEBIM_SLASH_KEY_PATH__/v1/webimplugin/tenants/"
 				+ tenantId
@@ -730,7 +730,10 @@ up2Im.listen(function(msg){
 				+ "&appName=" + params.appName
 				+ "&userName=" + params.userName
 				+ "&serviceSessionId=" + params.serviceSessionId
-				+ "&token=" + params.token,
+				+ "&token=" + params.token
+				+ "&isChannelTag=" + params.isChannelTag
+				+ "&channelType=" + params.channelType
+				+ "&channelId=" + params.channelId,
 			msg: msg,
 			type: "GET",
 			excludeData: true
@@ -803,6 +806,20 @@ up2Im.listen(function(msg){
 			excludeData: true,
 		});
 		break;
+	case "getResolutionparams":
+	emitAjax({
+		url: "__WEBIM_SLASH_KEY_PATH__/v1/webimplugin/tenants/" + tenantId + "/resolutionparams"
+		+ "?orgName=" + params.orgName
+		+ "&appName=" + params.appName
+		+ "&userName=" + params.userName
+		+ "&token=" + params.token
+		+ "&channelType=" + params.channelType
+		+ "&channelId=" + params.channelId,
+		type: "GET",
+		msg: msg,
+		excludeData: true,
+	});
+	break;
 	case "getPassword2":
 		emitAjax({
 			url: "__WEBIM_SLASH_KEY_PATH__/v1/webimplugin/visitors/password2"
