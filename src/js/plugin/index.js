@@ -37,7 +37,7 @@ function getScriptConfig(){
 		tmp = arr[i].split("=");
 		obj[tmp[0]] = tmp.length > 1 ? decodeURIComponent(tmp[1]) : "";
 	}
-	return { json: obj, domain: domain };
+	return { json: obj, domain: domain, src: src };
 }
 // get parameters from easemob.js
 var baseConfig = getScriptConfig();
@@ -46,6 +46,11 @@ let lang = window.easemobim.config.language || baseConfig.json.language || 'zh';
 let initLang = lang.split('-')[0];
 if (lang == 'zh-HK') {
 	initLang = lang;
+}
+
+// 兼容老的语言
+if (baseConfig.src.indexOf('en-US') !== -1) {
+	initLang = 'en';
 }
 
 i18next.use(i18nextHttpBackend).init({

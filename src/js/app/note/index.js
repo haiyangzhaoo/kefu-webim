@@ -35,6 +35,11 @@ if (lang == 'zh-HK') {
 	initLang = lang;
 }
 
+// 兼容老的语言
+if (location.pathname.indexOf('en-US') !== -1) {
+	initLang = 'en';
+}
+
 i18next.use(i18nextHttpBackend).init({
 	lng: initLang,
 	fallbackLng: false,

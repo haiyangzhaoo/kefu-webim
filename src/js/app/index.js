@@ -44,6 +44,11 @@ if (!utils.isTop) { // js
 				initLang = lang;
 			}
 
+			// 兼容老的语言
+			if (location.pathname.indexOf('en-US') !== -1) {
+				initLang = 'en';
+			}
+
 			i18nHttp.init({
 				lng: initLang,
 				fallbackLng: false,
@@ -73,6 +78,10 @@ if (!utils.isTop) { // js
 	if (lang == 'zh-HK') {
 		initLang = lang;
 	}
+	// 兼容老的语言
+	if (location.pathname.indexOf('en-US') !== -1) {
+		initLang = 'en';
+	}
 
 	i18nHttp.init({
 		lng: initLang,
@@ -84,7 +93,7 @@ if (!utils.isTop) { // js
 		// defaultNS: 'translation',
 		// languages: ['zhCN', 'enUS'],
 		backend: {
-			loadPath: `/v1/webimplugin/settings/config/${searchParams.configId}/language/conten?language=${initLang}`,
+			loadPath: `/v1/webimplugin/settings/config/${searchParams.configId}/language/content?language=${initLang}`,
 			addPath: null,
 			parse: ret => {
 				 ret = JSON.parse(ret);
