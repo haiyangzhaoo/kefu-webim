@@ -1188,7 +1188,6 @@ up2Im.listen(function(msg){
 	// 会话结束后弹屏设置(开关)
 	case "getSessionClosedDialog":
 		emitAjax({
-				
 			url: "__WEBIM_SLASH_KEY_PATH__/v1/webimplugin/tenants/" + tenantId + "/options/sessionClosedDialog",
 			type: "GET",
 			msg: msg,
@@ -1198,14 +1197,12 @@ up2Im.listen(function(msg){
 	// 会话结束后弹屏设置(url)
 	case "getSessionClosedDialogUrl":
 		emitAjax({
-				
 			url: "__WEBIM_SLASH_KEY_PATH__/v1/webimplugin/tenants/" + tenantId + "/options/sessionClosedDialogUrl",
 			type: "GET",
 			msg: msg,
 			excludeData: true,
 		});
 	break;
-	// /v1/webimplugin/tenants/{tenantId}/visitors/init-language/set
 	default:
 		console.error("unexpect api name: " + apiName);
 		break;
