@@ -725,7 +725,7 @@ function _bindEvents(){
 							menuid: this.getAttribute("data-id")
 						}
 					},
-          robot: {
+          dhRobot: {
             node: dhNode
           }
 				}
@@ -1578,6 +1578,10 @@ function _onReady(){
 		}, 1000);
 		window.sessionStorage && sessionStorage.removeItem("chartIsShow");
 	}
+  if(typeof window._sendFaqMessage === "function"){
+    window._sendFaqMessage();
+    window._sendFaqMessage = undefined;
+  }
 }
 
 function _initSDK(){

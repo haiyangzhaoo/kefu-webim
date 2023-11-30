@@ -13,11 +13,12 @@ function init(obj){
 	var iframe;
 
 	var resultStatus = obj.resultStatus;
+  var options = commonConfig.getConfig().options
 	apis.update(commonConfig.getConfig());
 
 	// 外部已经处理了是否显示
 	if(resultStatus[0]){
-		faq = new Faq();
+		faq = new Faq(options["item-click-action"]);
 	}
 	if(resultStatus[1]){
 		selfService = new SelfService();
