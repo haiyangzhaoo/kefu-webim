@@ -41,6 +41,7 @@ function getScriptConfig(){
 }
 // get parameters from easemob.js
 var baseConfig = getScriptConfig();
+window.easemobBaseConfig = baseConfig;
 
 let lang = window.easemobim.config.language || baseConfig.json.language || 'zh';
 let initLang = lang.split('-')[0];

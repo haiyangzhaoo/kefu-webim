@@ -8,8 +8,10 @@ var pcImgView = require("./pcImgview");
 var InviteBox = require("./inviteView");
 var eventListener = require("@/app/tools/eventListener");
 
+// 兼容老的语言
 // var IM_HTML_PATH = __("config.language") === "en-US" ? "/en-US/im_cached.html" : "/im_cached.html";
-var IM_HTML_PATH = location.pathname.indexOf('en-US') !== -1 ? "/en-US/im_cached.html" : "/im_cached.html";
+var IM_HTML_PATH = easemobBaseConfig.src.indexOf('en-US') !== -1 ? "/en-US/im_cached.html" : "/im_cached.html";
+
 var me = this;
 var _st = 0;
 var _startPosition = {
