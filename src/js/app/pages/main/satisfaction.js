@@ -58,7 +58,11 @@ function _init(){
 	color = !color? $("body." + themeClassName + " .border-color").css("borderColor") : color;
 	bgColor = $("body." + themeClassName + " .border-color").css("borderColor") ? $("body." + themeClassName + " .border-color").css("borderColor") : color;
 	color = utils.changeToRgb(color);
-	loading.show("satisfaction");
+	// 如果存在url弹窗，不loading，否则会闪
+	if(!$(document.querySelector(".session-closed-dialog"))){
+		loading.show("satisfaction");
+	}
+	
 	//默认五星评价的开关
 	apiHelper.getDefaultFiveStarEnable()
 	.then(function(resp){
@@ -200,19 +204,19 @@ function _init(){
 				// dialog && dialog.hide();
 				dialog && dialog.el.remove();
 				// 关闭满意度，弹出url配置弹窗。
-				eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
+				// eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
 			});
 			utils.live(".icon-back-new","click",function(){
 				// dialog && dialog.hide();
 				dialog && dialog.el.remove();
 				// 关闭满意度，弹出url配置弹窗。
-				eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
+				// eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
 			});
 			utils.live(".wrapper-title .icon-close","click",function(){
 				// dialog && dialog.hide();
 				dialog && dialog.el.remove();
 				// 关闭满意度，弹出url配置弹窗。
-				eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
+				// eventListener.excuteCallbacks(_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,[])
 			});
 
 			if(utils.isMobile || ($("body").hasClass("window-demo") && $("#em-kefu-webim-self").hasClass("hide"))){
@@ -236,7 +240,9 @@ function _init(){
 			// 	confirmText: __("common.submit"),
 			// 	confirm: _confirm,
 			// });
-			loading.hide("satisfaction");
+			if(!$(document.querySelector(".session-closed-dialog"))){
+				loading.hide("satisfaction");
+			}
 			dialog.show();
 
 			if(!$(document.querySelector(".em-self-wrapper")).hasClass("hide")){

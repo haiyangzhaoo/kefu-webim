@@ -76,18 +76,20 @@ function init(){
 		_const.SYSTEM_EVENT.SESSION_CLOSED,
 		function(){
 			// 满意度评价邀请为主动弹出邀请的情况时，先弹满意度。
-			config = commonConfig.getConfig();
-			if(config.ui.enquiryShowMode === "popup"){
-				eventListener.add(
-					_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,
-					function(){
-						show();
-					}
-				);
-			}
-			else{
-				show();
-			}
+			// config = commonConfig.getConfig();
+			// if(config.ui.enquiryShowMode === "popup"){
+			// 	eventListener.add(
+			// 		_const.SYSTEM_EVENT.CUSTOMURL_DIALOG_SHOW,
+			// 		function(){
+			// 			show();
+			// 		}
+			// 	);
+			// }
+			// else{
+			// 	show();
+			// }
+
+			show();
 		}
 	);
 	eventListener.add(
