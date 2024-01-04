@@ -1,4 +1,4 @@
-var newTitle = __("prompt.new_message_title_notice");
+var newTitle = '新消息提醒';
 var titleST = 0;
 var originTitle = document.title;
 var tempArr = (originTitle + newTitle).split("");
